@@ -84,10 +84,14 @@ def test_transfer_pair_between_own_accounts(proc: LedgerProcessor) -> None:
     inn = proc.process(
         _raw("viva.republica.toss", "500,000원 입금", "김가게 → 내 토스뱅크 통장", "2026-11-05T06:56:00+09:00", sub="토스뱅크")
     )
-    # "내 토스뱅크 통장" counterparty -> transfer, and the earlier withdrawal is re-labelled too
+    # same amount out of one account and into another within minutes -> both legs become a transfer
     assert inn.transaction["kind"] == "transfer"
     rows = proc.store.list_transactions(date(2026, 11, 5), date(2026, 11, 5))
     assert {r["kind"] for r in rows} == {"transfer"}
+    # the transfer total counts the money once, not once per leg
+    day = proc.store.daily_totals(date(2026, 11, 5), date(2026, 11, 5))["2026-11-05"]
+    assert day["transfer"] == 500000
+    assert day["expense"] == 0 and day["income"] == 0
 
 
 def test_personal_sms_not_stored(proc: LedgerProcessor) -> None:

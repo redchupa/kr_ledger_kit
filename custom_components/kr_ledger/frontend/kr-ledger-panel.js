@@ -2,6 +2,7 @@
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const KIND_LABEL = { expense: "지출", income: "수입", transfer: "이체", refund: "취소·환불" };
+const SOURCE_LABEL = { card_sms: "카드 문자", card_app: "카드 앱", bank_app: "은행 앱", bank_sms: "은행 문자", pay_app: "페이 앱" };
 const fmt = new Intl.NumberFormat("ko-KR");
 
 const esc = (v) =>
@@ -13,6 +14,7 @@ const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate(
 const STYLE = `
 :host {
   display: block; min-height: 100%;
+  container: kl / inline-size;
   background: var(--primary-background-color); color: var(--primary-text-color);
   font-family: var(--paper-font-body1_-_font-family, system-ui, sans-serif);
   --kl-expense: var(--kr-ledger-expense-color, #e5484d);
@@ -33,7 +35,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .icon-btn { background: none; border: 0; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; }
 .icon-btn:hover { background: var(--kl-line); }
 .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
-.wrap { max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 16px 16px 96px; display: grid; gap: 16px; }
 .month-nav { display: flex; align-items: center; gap: 8px; }
 .month-nav .label { font-size: 22px; font-weight: 600; min-width: 140px; text-align: center; font-variant-numeric: tabular-nums; }
 .chip { border: 1px solid var(--kl-line); background: var(--kl-card); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
@@ -42,14 +44,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .card { background: var(--kl-card); border-radius: var(--kl-radius); border: 1px solid var(--kl-line); }
 .stat { padding: 14px 16px; }
 .stat .k { font-size: 13px; color: var(--kl-muted); }
-.stat .v { font-size: 22px; font-weight: 650; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat { min-width: 0; }
+.stat .v { font-size: 22px; font-weight: 650; margin-top: 4px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
 .stat .s { font-size: 12px; color: var(--kl-muted); margin-top: 2px; }
 .expense { color: var(--kl-expense); } .income { color: var(--kl-income); } .transfer, .muted { color: var(--kl-muted); }
 .tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
 .tabs .chip { white-space: nowrap; }
 .badge { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; font-size: 11px; line-height: 18px;
   background: var(--kl-expense); color: #fff; text-align: center; }
-.grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .grid .wd { padding: 8px 0; text-align: center; font-size: 12px; color: var(--kl-muted); border-bottom: 1px solid var(--kl-line); }
 .grid .wd:first-child, .day.sun .num { color: var(--kl-expense); }
 .day.sat .num { color: var(--kl-income); }
@@ -104,12 +108,16 @@ label.sw input { width: auto; }
 .fab svg { width: 26px; height: 26px; fill: currentColor; }
 .sched { padding: 8px 16px; border-top: 1px solid var(--kl-line); display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
 .layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
-@media (max-width: 600px) {
-  .wrap { padding: 12px; gap: 12px; }
+.confirm-del { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--kl-expense); }
+/* Size by the panel's own width (the HA sidebar may be open), not the window. */
+@container kl (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+@container kl (max-width: 600px) {
+  .wrap { padding: 12px 12px 88px; gap: 12px; }
   .day { min-height: 58px; padding: 4px 2px; } .day .amt { font-size: 10px; } .day .dot { display: none; }
-  .stat .v { font-size: 18px; } .acc { grid-template-columns: 1fr; } .acc .ctl { justify-content: flex-start; }
+  .stat { padding: 12px; } .stat .v { font-size: 17px; }
+  .acc { grid-template-columns: 1fr; } .acc .ctl { justify-content: flex-start; }
   .acc input[type=text] { width: 100%; }
+  .row { grid-template-columns: 40px minmax(0, 1fr) auto; padding: 10px 12px; }
 }
 `;
 
@@ -230,10 +238,30 @@ class KrLedgerPanel extends HTMLElement {
     if (a === "overlay" && e.target === el) { this._dialog = null; return this._render(); }
     if (a === "save") return this._save();
     if (a === "delete") {
-      if (!confirm("이 내역을 삭제할까요?")) return;
+      this._captureDialog();
+      this._dialog.confirmDelete = true;
+      return this._render();
+    }
+    if (a === "delete-no") {
+      this._dialog.confirmDelete = false;
+      return this._render();
+    }
+    if (a === "delete-yes") {
       await this._ws({ type: "kr_ledger/transaction/delete", tx_id: this._dialog.tx.id });
       this._dialog = null;
       return this._load();
+    }
+  }
+
+  /** Copy the dialog's current input values into its state so a re-render keeps them. */
+  _captureDialog() {
+    const root = this.shadowRoot;
+    const val = (n) => root.querySelector(`[name="d-${n}"]`)?.value;
+    const tx = this._dialog.tx;
+    for (const [field, name] of [["kind", "kind"], ["amount", "amount"], ["merchant", "merchant"], ["category", "category"],
+      ["memo", "memo"], ["account_label", "account"], ["occurred_at", "when"]]) {
+      const v = val(name);
+      if (v !== undefined) tx[field] = v;
     }
   }
 
@@ -250,20 +278,25 @@ class KrLedgerPanel extends HTMLElement {
   }
 
   async _save() {
-    const root = this.shadowRoot;
-    const val = (n) => root.querySelector(`[name="d-${n}"]`)?.value ?? "";
-    const amount = Number(String(val("amount")).replace(/[^\d.]/g, ""));
-    if (!amount) { alert("금액을 입력하세요."); return; }
+    if (this._saving) return;
+    this._captureDialog();
+    const tx = this._dialog.tx;
+    const amount = Number(String(tx.amount ?? "").replace(/[^\d.]/g, ""));
+    if (!amount) {
+      this._dialog.error = "금액을 입력하세요.";
+      return this._render();
+    }
     const msg = {
-      kind: val("kind"),
+      kind: tx.kind,
       amount,
-      merchant: val("merchant") || null,
-      category: val("category") || null,
-      memo: val("memo") || null,
-      account_label: val("account") || null,
+      merchant: tx.merchant || null,
+      category: tx.category || null,
+      memo: tx.memo || null,
+      account_label: tx.account_label || null,
     };
-    const when = val("when");
-    if (when) msg.occurred_at = when.length === 16 ? `${when}:00` : when;
+    const when = String(tx.occurred_at || "").slice(0, 16);
+    if (when) msg.occurred_at = `${when}:00`;
+    this._saving = true;
     try {
       if (this._dialog.mode === "edit") {
         await this._ws({ type: "kr_ledger/transaction/update", tx_id: this._dialog.tx.id, ...msg });
@@ -274,7 +307,10 @@ class KrLedgerPanel extends HTMLElement {
       this._dialog = null;
       await this._load();
     } catch (err) {
-      alert(`저장하지 못했습니다: ${err.message || err}`);
+      this._dialog.error = `저장하지 못했습니다: ${err.message || err}`;
+      this._render();
+    } finally {
+      this._saving = false;
     }
   }
 
@@ -402,7 +438,7 @@ class KrLedgerPanel extends HTMLElement {
       const amount = t.currency === "KRW" ? won(t.amount) : `${esc(t.currency)} ${fmt.format(t.amount)}`;
       const time = t.time_known ? t.occurred_at.slice(11, 16) : "—";
       const tags = [t.kind !== "expense" ? `<span class="tag">${KIND_LABEL[t.kind] || t.kind}</span>` : "",
-        t.category ? `<span class="tag">${esc(t.category)}</span>` : "",
+        t.category && t.category !== KIND_LABEL[t.kind] ? `<span class="tag">${esc(t.category)}</span>` : "",
         t.account_include === false ? `<span class="tag">제외</span>` : ""].join("");
       const acc = t.account_name || t.account_label || t.issuer || "";
       return `<button class="row" data-a="tx" data-v="${t.id}">
@@ -461,7 +497,7 @@ class KrLedgerPanel extends HTMLElement {
     const cats = [...(this._meta.categories || []), ...(this._meta.special || [])];
     const when = (tx.occurred_at || "").slice(0, 16);
     const opt = (v, l, cur) => `<option value="${v}" ${v === cur ? "selected" : ""}>${l}</option>`;
-    const sourceText = source || (mode === "edit" && tx.raw_ids?.length ? `알림 ${tx.raw_ids.length}건에서 생성 · ${(tx.source_kinds || []).join(", ")}` : "");
+    const sourceText = source || (mode === "edit" && tx.raw_ids?.length ? `알림 ${tx.raw_ids.length}건에서 생성 · ${(tx.source_kinds || []).map((k) => SOURCE_LABEL[k] || k).join(", ")}` : "");
     return `<div class="overlay" data-a="overlay"><div class="card dialog" role="dialog" aria-modal="true">
       <h3>${mode === "edit" ? "내역 수정" : "직접 추가"}</h3>
       ${sourceText ? `<div class="src">${esc(sourceText)}</div>` : ""}
@@ -478,10 +514,17 @@ class KrLedgerPanel extends HTMLElement {
       </div>
       <label class="f"><span>계좌·카드</span><input name="d-account" value="${esc(tx.account_label || "")}"></label>
       <label class="f"><span>메모</span><input name="d-memo" value="${esc(tx.memo || "")}"></label>
-      <div class="actions" style="justify-content:space-between">
-        ${mode === "edit" ? `<button class="btn danger" data-a="delete">삭제</button>` : "<span></span>"}
-        <span class="actions"><button class="btn" data-a="close">취소</button><button class="btn primary" data-a="save">저장</button></span>
-      </div>
+      ${this._dialog.error ? `<div class="confirm-del" role="alert">${esc(this._dialog.error)}</div>` : ""}
+      ${this._dialog.confirmDelete
+        ? `<div class="actions" style="justify-content:space-between;align-items:center">
+            <span class="confirm-del">이 내역을 삭제할까요?</span>
+            <span class="actions"><button class="btn" data-a="delete-no">아니요</button>
+              <button class="btn primary" style="background:var(--kl-expense);border-color:var(--kl-expense)" data-a="delete-yes">삭제</button></span>
+          </div>`
+        : `<div class="actions" style="justify-content:space-between">
+            ${mode === "edit" ? `<button class="btn danger" data-a="delete">삭제</button>` : "<span></span>"}
+            <span class="actions"><button class="btn" data-a="close">취소</button><button class="btn primary" data-a="save">저장</button></span>
+          </div>`}
     </div></div>`;
   }
 }

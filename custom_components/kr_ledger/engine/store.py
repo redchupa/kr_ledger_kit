@@ -291,7 +291,10 @@ class LedgerStore:
 
     def daily_totals(self, start: date, end: date) -> dict[str, dict[str, float]]:
         rows = self._query(
-            """SELECT t.date AS d, t.kind AS kind, SUM(CAST(t.amount AS REAL)) AS total, COUNT(*) AS n
+            # A transfer shows up twice (out of one account, into another); count the outgoing leg only.
+            """SELECT t.date AS d, t.kind AS kind,
+                      SUM(CASE WHEN t.kind = 'transfer' AND t.direction = 'in' THEN 0 ELSE CAST(t.amount AS REAL) END) AS total,
+                      COUNT(*) AS n
                FROM transactions t LEFT JOIN accounts a ON a.label = t.account_label
                WHERE t.deleted = 0 AND t.currency = 'KRW' AND COALESCE(a.include, 1) = 1
                  AND t.date BETWEEN ? AND ?
