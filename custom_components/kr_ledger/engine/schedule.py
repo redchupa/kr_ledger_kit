@@ -17,9 +17,28 @@ _ISSUER_RE = re.compile(r"\[([^\]]*(?:카드|은행|뱅크))\]")
 _MD_AMOUNT_RE = re.compile(r"(\d{1,2})/(\d{1,2})\s*(?:출금예정|결제금액|카드대금|결제예정금액|청구금액)\s*:?\s*([\d,]+)\s*원")
 # 하나카드 앱: 11월 13일 결제예정금액은 319,938원
 _KO_MD_AMOUNT_RE = re.compile(r"(\d{1,2})월\s*(\d{1,2})일\s*(?:결제예정금액|결제금액|출금예정금액)\S*\s*([\d,]+)\s*원")
+# 현대카드 알림톡: "12일은 현대카드 이용 금액 결제일입니다 ... - 결제금액 : 1,161,511원 (10일 기준)"
+_DAY_DUE_RE = re.compile(r"(?<!\d)(\d{1,2})일은[^\n]*결제일")
+_LABELED_AMOUNT_RE = re.compile(r"(?:결제금액|결제예정금액|청구금액)\s*[:：]\s*([\d,]+)\s*원")
 # 대출: 납입일은 2026.11.23 ... 납입예정금액 : 1,725,651원
 _LOAN_DATE_RE = re.compile(r"납입일[은는]?\s*(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})")
 _LOAN_AMOUNT_RE = re.compile(r"납입예정금액\s*:?\s*([\d,]+)\s*원|원리금\s*([\d,]+)\s*원")
+
+
+def _next_day_of_month(day: int, today: date) -> date | None:
+    """The next date (today included) whose day-of-month is ``day``."""
+    year, month = today.year, today.month
+    for _ in range(3):
+        try:
+            candidate = date(year, month, day)
+        except ValueError:
+            candidate = None
+        if candidate and candidate >= today:
+            return candidate
+        month += 1
+        if month > 12:
+            year, month = year + 1, 1
+    return None
 
 
 def parse_schedule(raw: RawNotification, issuer_hint: str) -> ParsedSchedule | None:
@@ -41,6 +60,15 @@ def parse_schedule(raw: RawNotification, issuer_hint: str) -> ParsedSchedule | N
             parser="schedule.card_bill",
             amount=parse_decimal(m.group(3)),
             due_date=due,
+        )
+
+    if (dm := _DAY_DUE_RE.search(text)) and (am := _LABELED_AMOUNT_RE.search(text)):
+        return ParsedSchedule(
+            issuer=issuer,
+            title="카드 결제 예정",
+            parser="schedule.card_bill",
+            amount=parse_decimal(am.group(1)),
+            due_date=_next_day_of_month(int(dm.group(1)), raw.post_time.date()),
         )
 
     if m := _LOAN_DATE_RE.search(text):

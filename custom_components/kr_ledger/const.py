@@ -6,7 +6,7 @@ from typing import Final
 
 DOMAIN: Final = "kr_ledger"
 NAME: Final = "KR Ledger"
-VERSION: Final = "0.2.0"
+VERSION: Final = "0.2.1"
 
 CONF_SENSORS: Final = "notification_sensors"
 CONF_OWNERS: Final = "owner_names"

@@ -567,5 +567,19 @@
       "parser": "app.samsung_pay",
       "amount": "19800"
     }
+  },
+  {
+    "id": "kakao_alimtalk_card_bill_total",
+    "package": "com.kakao.talk",
+    "title": "현대카드",
+    "body": "[현대카드] 결제예정 금액 사전 안내\n\n홍길동 회원님,\n12일은 현대카드 이용 금액 결제일입니다.\n아래 URL 클릭하여 안전하고 편리하게 결제예정 금액을 확인하실 수 있습니다.\n\n[결제 정보]\n- 결제금액 : 1,161,511원 (10일 기준)\n\n▶ h7.is/xxxx",
+    "post_time": "2026-11-10T15:47:12+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.card_bill",
+      "issuer": "현대카드",
+      "amount": "1161511",
+      "due_date": "2026-11-12"
+    }
   }
 ]

@@ -109,6 +109,33 @@ def test_schedule_dedup(proc: LedgerProcessor) -> None:
     assert len(proc.store.list_schedules(date(2026, 11, 1), date(2026, 11, 30))) == 1
 
 
+def test_bill_total_replaces_per_card_notices(proc: LedgerProcessor) -> None:
+    # two per-card SMS notices for the same due date, then the combined 알림톡 total
+    proc.process(_raw(SMS, "1577-6000", "[Web발신]\n[현대카드] 홍*동님 11/12결제금액 1,009,601원(11/04기준)", "2026-11-05T10:50:00+09:00"))
+    proc.process(
+        _raw(
+            SMS,
+            "1577-6000",
+            "[Web발신]\n[현대카드] 홍*동님 11/12결제금액 151,910원 연회비10,000원포함(11/04기준)",
+            "2026-11-05T10:40:00+09:00",
+        )
+    )
+    total = (
+        "[현대카드] 결제예정 금액 사전 안내\n\n홍길동 회원님,\n12일은 현대카드 이용 금액 결제일입니다.\n\n"
+        "[결제 정보]\n- 결제금액 : 1,161,511원 (10일 기준)"
+    )
+    proc.process(_raw("com.kakao.talk", "현대카드", total, "2026-11-10T15:47:12+09:00"))
+    rows = proc.store.list_schedules(date(2026, 11, 1), date(2026, 11, 30))
+    assert [(r["issuer"], r["amount"], r["due_date"]) for r in rows] == [("현대카드", "1161511", "2026-11-12")]
+
+
+def test_bill_notices_that_dont_add_up_stay_separate(proc: LedgerProcessor) -> None:
+    proc.process(_raw(SMS, "1577-6000", "[Web발신]\n[현대카드] 홍*동님 11/12결제금액 100,000원", "2026-11-05T10:50:00+09:00"))
+    proc.process(_raw(SMS, "1577-6000", "[Web발신]\n[현대카드] 홍*동님 11/12결제금액 50,000원", "2026-11-05T10:51:00+09:00"))
+    proc.process(_raw(SMS, "1577-6000", "[Web발신]\n[현대카드] 홍*동님 11/12결제금액 70,000원", "2026-11-05T10:52:00+09:00"))
+    assert len(proc.store.list_schedules(date(2026, 11, 1), date(2026, 11, 30))) == 3
+
+
 def test_daily_totals_and_refund(proc: LedgerProcessor) -> None:
     proc.process(
         _raw(

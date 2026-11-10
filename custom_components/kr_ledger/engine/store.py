@@ -340,6 +340,19 @@ class LedgerStore:
 
     # ------------------------------------------------------------ schedules
     def insert_schedule(self, issuer: str | None, title: str, amount: Decimal | None, due: date | None, raw_id: int | None) -> int | None:
+        if amount is not None and due is not None:
+            # A card company often sends per-card bill notices first and the combined
+            # total later (SMS then 알림톡). If the new amount is exactly the sum of the
+            # notices already stored for that issuer and day, it replaces them.
+            rows = self._query(
+                "SELECT id, amount FROM schedules WHERE issuer = ? AND due_date = ? AND title = ? AND amount != ''",
+                (issuer or "", _iso(due), title),
+            )
+            parts = [Decimal(r["amount"]) for r in rows]
+            if len(parts) >= 2 and sum(parts) == Decimal(amount):
+                with self._lock:
+                    self.conn.executemany("DELETE FROM schedules WHERE id = ?", [(r["id"],) for r in rows])
+                    self.conn.commit()
         cur = self._exec(
             "INSERT OR IGNORE INTO schedules (issuer, title, amount, due_date, raw_id, created_at) VALUES (?, ?, ?, ?, ?, ?)",
             (issuer or "", title, _iso(amount) if amount is not None else "", _iso(due) if due else "", raw_id, _now()),
