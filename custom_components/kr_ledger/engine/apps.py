@@ -171,7 +171,8 @@ def parse_hanacard_app(raw: RawNotification) -> ParsedTransaction | None:
 
 
 # ---------------------------------------------------------------- 삼성페이
-_SPAY_TITLE_RE = re.compile(r"^₩\s*([\d,]+)\s*(결제\s*완료|결제\s*취소|환불)")
+# "₩19,800 결제 완료" (Samsung Pay) / "19,800원 결제 완료" (Samsung Wallet variants)
+_SPAY_TITLE_RE = re.compile(r"^(?:₩\s*([\d,]+)|([\d,]+)\s*원)\s*(결제\s*완료|결제\s*취소|환불)")
 
 
 def parse_samsung_pay(raw: RawNotification) -> ParsedTransaction | None:
@@ -182,7 +183,7 @@ def parse_samsung_pay(raw: RawNotification) -> ParsedTransaction | None:
     body = clean(raw.body)
     return ParsedTransaction(
         direction=Direction.OUT,
-        amount=parse_decimal(m.group(1)),  # type: ignore[arg-type]
+        amount=parse_decimal(m.group(1) or m.group(2)),  # type: ignore[arg-type]
         occurred_at=raw.post_time,
         method=Method.PAY,
         source_kind=SourceKind.PAY_APP,
@@ -190,7 +191,7 @@ def parse_samsung_pay(raw: RawNotification) -> ParsedTransaction | None:
         issuer="삼성페이",
         merchant=body.split("\n")[0] if body else None,
         account_label=None,
-        is_cancel="취소" in m.group(2) or "환불" in m.group(2),
+        is_cancel="취소" in m.group(3) or "환불" in m.group(3),
     )
 
 

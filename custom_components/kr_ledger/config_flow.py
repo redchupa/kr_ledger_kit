@@ -27,7 +27,9 @@ SENSOR_SELECTOR = selector.EntitySelector(selector.EntitySelectorConfig(domain="
 
 
 def _suggest_sensors(hass) -> list[str]:
-    return [s.entity_id for s in hass.states.async_all("sensor") if s.entity_id.endswith("_last_notification")]
+    """Pre-select every phone's last-notification and active-notification sensors."""
+    suffixes = ("_last_notification", "_active_notification_count")
+    return [s.entity_id for s in hass.states.async_all("sensor") if s.entity_id.endswith(suffixes)]
 
 
 class KrLedgerConfigFlow(ConfigFlow, domain=DOMAIN):

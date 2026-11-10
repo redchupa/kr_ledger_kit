@@ -5,10 +5,22 @@
     "title": "⁨롯데카드결재내역⁩",
     "body": "[Web발신]\n메가엠지씨커피\n12,800원 승인\n홍*동 롯데법인1234\n일시불 11/10 09:27\n누적723,270원",
     "post_time": "2026-11-10T09:27:30+09:00",
-    "expect": {"status": "transaction", "parser": "sms.card", "direction": "out", "amount": "12800", "currency": "KRW",
-               "occurred_at": "2026-11-10T09:27", "issuer": "롯데카드", "account_label": "롯데법인1234",
-               "merchant": "메가엠지씨커피", "is_cancel": false, "cumulative": 723270, "installment": "일시불",
-               "kind": "expense", "category": "식비"}
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.card",
+      "direction": "out",
+      "amount": "12800",
+      "currency": "KRW",
+      "occurred_at": "2026-11-10T09:27",
+      "issuer": "롯데카드",
+      "account_label": "롯데법인1234",
+      "merchant": "메가엠지씨커피",
+      "is_cancel": false,
+      "cumulative": 723270,
+      "installment": "일시불",
+      "kind": "expense",
+      "category": "식비"
+    }
   },
   {
     "id": "lotte_sms_overseas",
@@ -16,8 +28,15 @@
     "title": "롯데카드결재내역",
     "body": "[Web발신]\nWWW.ALIEXPR\nUSD 32.63 해외승인\n홍*동 롯데5*1*\n일시불 11/07 11:46\n누적4,103,427원",
     "post_time": "2026-11-07T11:46:10+09:00",
-    "expect": {"status": "transaction", "amount": "32.63", "currency": "USD", "merchant": "WWW.ALIEXPR",
-               "account_label": "롯데5*1*", "kind": "expense", "category": "쇼핑"}
+    "expect": {
+      "status": "transaction",
+      "amount": "32.63",
+      "currency": "USD",
+      "merchant": "WWW.ALIEXPR",
+      "account_label": "롯데5*1*",
+      "kind": "expense",
+      "category": "쇼핑"
+    }
   },
   {
     "id": "lotte_sms_cancel_late",
@@ -25,8 +44,14 @@
     "title": "롯데카드결재내역",
     "body": "[Web발신]\n토스페이먼츠 주식회사\n118,329원 취소완료\n홍*동 롯데5*1*\n11/06",
     "post_time": "2026-11-09T10:05:00+09:00",
-    "expect": {"status": "transaction", "amount": "118329", "is_cancel": true, "occurred_at": "2026-11-06T12:00",
-               "time_known": false, "kind": "refund"}
+    "expect": {
+      "status": "transaction",
+      "amount": "118329",
+      "is_cancel": true,
+      "occurred_at": "2026-11-06T12:00",
+      "time_known": false,
+      "kind": "refund"
+    }
   },
   {
     "id": "lotte_sms_autodebit",
@@ -34,8 +59,13 @@
     "title": "롯데카드결재내역",
     "body": "[Web발신]\nLG U+ 통신요금 자동이체\n28,100원(1건) 승인\n홍*동 롯데1*2*\n11/09",
     "post_time": "2026-11-10T10:16:00+09:00",
-    "expect": {"status": "transaction", "amount": "28100", "merchant": "LG U+ 통신요금 자동이체",
-               "occurred_at": "2026-11-09T12:00", "category": "통신"}
+    "expect": {
+      "status": "transaction",
+      "amount": "28100",
+      "merchant": "LG U+ 통신요금 자동이체",
+      "occurred_at": "2026-11-09T12:00",
+      "category": "통신"
+    }
   },
   {
     "id": "hyundai_sms_approval",
@@ -43,8 +73,15 @@
     "title": "⁨1577-6200⁩",
     "body": "[Web발신]\n현대 MY BUSINESS 승인\n홍*동\n210,000원 일시불\n11/10 10:26\n(주)테스트상사\n누적1,969,970원",
     "post_time": "2026-11-10T10:26:40+09:00",
-    "expect": {"status": "transaction", "issuer": "현대카드", "account_label": "현대 MY BUSINESS", "amount": "210000",
-               "merchant": "(주)테스트상사", "occurred_at": "2026-11-10T10:26", "cumulative": 1969970}
+    "expect": {
+      "status": "transaction",
+      "issuer": "현대카드",
+      "account_label": "현대 MY BUSINESS",
+      "amount": "210000",
+      "merchant": "(주)테스트상사",
+      "occurred_at": "2026-11-10T10:26",
+      "cumulative": 1969970
+    }
   },
   {
     "id": "hyundai_sms_naver",
@@ -52,7 +89,11 @@
     "title": "1577-6200",
     "body": "[Web발신]\n현대 네이버 승인\n홍*동\n26,298원 일시불\n11/09 17:30\n관세(네이버페이)\n누적1,759,970원",
     "post_time": "2026-11-09T17:30:20+09:00",
-    "expect": {"status": "transaction", "merchant": "관세(네이버페이)", "category": "세금"}
+    "expect": {
+      "status": "transaction",
+      "merchant": "관세(네이버페이)",
+      "category": "세금"
+    }
   },
   {
     "id": "kb_sms_approval",
@@ -60,8 +101,14 @@
     "title": "국민카드",
     "body": "[Web발신]\nKB국민카드1234승인\n홍*동님\n12,700원 일시불\n11/07 18:32\n쿠팡이츠\n누적2,074,386원",
     "post_time": "2026-11-07T18:32:30+09:00",
-    "expect": {"status": "transaction", "issuer": "KB국민카드", "account_label": "KB국민카드1234", "amount": "12700",
-               "merchant": "쿠팡이츠", "category": "식비"}
+    "expect": {
+      "status": "transaction",
+      "issuer": "KB국민카드",
+      "account_label": "KB국민카드1234",
+      "amount": "12700",
+      "merchant": "쿠팡이츠",
+      "category": "식비"
+    }
   },
   {
     "id": "hana_sms_single_line",
@@ -69,8 +116,15 @@
     "title": "하나카드결재",
     "body": "[Web발신]\n하나1*2*승인 홍*동 4,500원 일시불 11/09 15:16 동네식품 누적1,146,438원",
     "post_time": "2026-11-09T15:16:30+09:00",
-    "expect": {"status": "transaction", "issuer": "하나카드", "account_label": "하나1*2*", "amount": "4500",
-               "merchant": "동네식품", "occurred_at": "2026-11-09T15:16", "cumulative": 1146438}
+    "expect": {
+      "status": "transaction",
+      "issuer": "하나카드",
+      "account_label": "하나1*2*",
+      "amount": "4500",
+      "merchant": "동네식품",
+      "occurred_at": "2026-11-09T15:16",
+      "cumulative": 1146438
+    }
   },
   {
     "id": "samsung_sms_style",
@@ -78,8 +132,13 @@
     "title": "삼성카드",
     "body": "[Web발신]\n삼성1234승인 홍*동\n12,000원 일시불\n11/10 12:34 스타벅스코리아\n누적100,000원",
     "post_time": "2026-11-10T12:34:30+09:00",
-    "expect": {"status": "transaction", "issuer": "삼성카드", "merchant": "스타벅스코리아", "amount": "12000",
-               "category": "식비"}
+    "expect": {
+      "status": "transaction",
+      "issuer": "삼성카드",
+      "merchant": "스타벅스코리아",
+      "amount": "12000",
+      "category": "식비"
+    }
   },
   {
     "id": "shinhan_bank_sms",
@@ -87,8 +146,15 @@
     "title": "신한은행 잔액조회",
     "body": "[Web발신]\n[신한은행]11/09\n16:41:08\n[110-***-000000]\n출금\n1,000원\n(홍길동)",
     "post_time": "2026-11-09T16:41:20+09:00",
-    "expect": {"status": "transaction", "parser": "sms.bank", "direction": "out", "amount": "1000",
-               "merchant": "홍길동", "occurred_at": "2026-11-09T16:41", "kind": "transfer"}
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.bank",
+      "direction": "out",
+      "amount": "1000",
+      "merchant": "홍길동",
+      "occurred_at": "2026-11-09T16:41",
+      "kind": "transfer"
+    }
   },
   {
     "id": "card_bill_lotte",
@@ -96,7 +162,12 @@
     "title": "롯데카드결재내역",
     "body": "[Web발신]\n[롯데카드]11/16출금예정2,668,841원\n\nltcard.kr/xxxx",
     "post_time": "2026-11-06T09:46:00+09:00",
-    "expect": {"status": "schedule", "issuer": "롯데카드", "amount": "2668841", "due_date": "2026-11-16"}
+    "expect": {
+      "status": "schedule",
+      "issuer": "롯데카드",
+      "amount": "2668841",
+      "due_date": "2026-11-16"
+    }
   },
   {
     "id": "card_bill_hyundai",
@@ -104,7 +175,12 @@
     "title": "1577-6000",
     "body": "[Web발신]\n[현대카드] 홍*동님 11/12결제금액 1,009,601원(11/04기준) h7.is/xxxx",
     "post_time": "2026-11-05T10:50:00+09:00",
-    "expect": {"status": "schedule", "issuer": "현대카드", "amount": "1009601", "due_date": "2026-11-12"}
+    "expect": {
+      "status": "schedule",
+      "issuer": "현대카드",
+      "amount": "1009601",
+      "due_date": "2026-11-12"
+    }
   },
   {
     "id": "card_bill_kb",
@@ -112,7 +188,12 @@
     "title": "국민카드소액결제",
     "body": "[Web발신]\n[KB국민카드]홍*동님 11/16 카드대금 1,540,916원(11/03기준) https://m.kbcard.com/z/xx",
     "post_time": "2026-11-05T16:01:00+09:00",
-    "expect": {"status": "schedule", "issuer": "KB국민카드", "amount": "1540916", "due_date": "2026-11-16"}
+    "expect": {
+      "status": "schedule",
+      "issuer": "KB국민카드",
+      "amount": "1540916",
+      "due_date": "2026-11-16"
+    }
   },
   {
     "id": "card_bill_year_rollover",
@@ -120,7 +201,10 @@
     "title": "롯데카드",
     "body": "[Web발신]\n[롯데카드]01/16출금예정100,000원",
     "post_time": "2026-12-28T09:00:00+09:00",
-    "expect": {"status": "schedule", "due_date": "2027-01-16"}
+    "expect": {
+      "status": "schedule",
+      "due_date": "2027-01-16"
+    }
   },
   {
     "id": "approval_year_rollover",
@@ -128,7 +212,11 @@
     "title": "국민카드",
     "body": "[Web발신]\nKB국민카드1234승인\n홍*동님\n5,000원 일시불\n12/31 23:59\nGS25\n누적5,000원",
     "post_time": "2027-01-01T00:00:30+09:00",
-    "expect": {"status": "transaction", "occurred_at": "2026-12-31T23:59", "category": "마트·생활"}
+    "expect": {
+      "status": "transaction",
+      "occurred_at": "2026-12-31T23:59",
+      "category": "마트·생활"
+    }
   },
   {
     "id": "personal_sms_with_money",
@@ -136,7 +224,9 @@
     "title": "⁨010-0000-0000⁩",
     "body": "3찬 취소 1000원 맞으실까요?",
     "post_time": "2026-11-08T12:34:00+09:00",
-    "expect": {"status": "dropped"}
+    "expect": {
+      "status": "dropped"
+    }
   },
   {
     "id": "otp_sms",
@@ -144,7 +234,9 @@
     "title": "1670-0000",
     "body": "[Web발신]\n[Coupang] 본인확인\n인증번호 [123456]입니다.\n\"타인 노출 금지\"",
     "post_time": "2026-11-05T23:00:00+09:00",
-    "expect": {"status": "dropped"}
+    "expect": {
+      "status": "dropped"
+    }
   },
   {
     "id": "delivery_sms",
@@ -152,7 +244,9 @@
     "title": "네이버쇼핑 고객센터",
     "body": "[Web발신]\n[네이버페이] 발송안내 '캠핑물통 ...' [한진택배] 배송조회 http://naver.me/xxxx",
     "post_time": "2026-11-09T12:32:00+09:00",
-    "expect": {"status": "dropped"}
+    "expect": {
+      "status": "dropped"
+    }
   },
   {
     "id": "loan_notice_sms",
@@ -160,7 +254,12 @@
     "title": "카카오뱅크문자",
     "body": "<제목:‎ 대출‎ 원리금‎ 납입일‎ 안내>‎ \n[Web발신]\n[카카오뱅크]\n홍*동님 주택담보대출(0000)의 다음 원리금 납입일은 2026.11.23입니다.\n  \n- 납입예정금액 : 1,725,651원  (발송일자 기준)",
     "post_time": "2026-11-08T11:50:00+09:00",
-    "expect": {"status": "schedule", "parser": "schedule.loan", "amount": "1725651", "due_date": "2026-11-23"}
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.loan",
+      "amount": "1725651",
+      "due_date": "2026-11-23"
+    }
   },
   {
     "id": "kakaobank_out",
@@ -168,9 +267,16 @@
     "title": "출금 200,000원",
     "body": "개인사업자통장(1111) → (주)거래처\r\n잔액 136,088원",
     "post_time": "2026-11-09T14:55:00+09:00",
-    "expect": {"status": "transaction", "parser": "app.kakaobank", "direction": "out", "amount": "200000",
-               "merchant": "(주)거래처", "account_label": "카카오뱅크 개인사업자통장(1111)", "balance": 136088,
-               "kind": "expense"}
+    "expect": {
+      "status": "transaction",
+      "parser": "app.kakaobank",
+      "direction": "out",
+      "amount": "200000",
+      "merchant": "(주)거래처",
+      "account_label": "카카오뱅크 개인사업자통장(1111)",
+      "balance": 136088,
+      "kind": "expense"
+    }
   },
   {
     "id": "kakaobank_in",
@@ -178,7 +284,13 @@
     "title": "입금 50,440원",
     "body": "Npay정산 → 개인사업자통장(1111)\r\n잔액 50,440원",
     "post_time": "2026-11-10T03:08:00+09:00",
-    "expect": {"status": "transaction", "direction": "in", "merchant": "Npay정산", "kind": "income", "category": "수입"}
+    "expect": {
+      "status": "transaction",
+      "direction": "in",
+      "merchant": "Npay정산",
+      "kind": "income",
+      "category": "수입"
+    }
   },
   {
     "id": "kakaobank_own_transfer",
@@ -186,7 +298,12 @@
     "title": "입금 300,000원",
     "body": "홍길동 → 개인사업자통장(2222)\r\n잔액 300,000원",
     "post_time": "2026-11-09T16:42:00+09:00",
-    "expect": {"status": "transaction", "direction": "in", "kind": "transfer", "category": "이체"}
+    "expect": {
+      "status": "transaction",
+      "direction": "in",
+      "kind": "transfer",
+      "category": "이체"
+    }
   },
   {
     "id": "kakaobank_card_bill",
@@ -194,7 +311,11 @@
     "title": "출금 500,000원",
     "body": "생활비통장(1111) → 롯데카드\r\n잔액 0원",
     "post_time": "2026-11-16T09:00:00+09:00",
-    "expect": {"status": "transaction", "kind": "transfer", "category": "카드대금"}
+    "expect": {
+      "status": "transaction",
+      "kind": "transfer",
+      "category": "카드대금"
+    }
   },
   {
     "id": "kakaobank_loan_app",
@@ -202,7 +323,11 @@
     "title": "대출 원리금 1,725,651원  납입 예정",
     "body": "주택담보대출(0000)의 원리금 납입일은 2026.11.23입니다.\r\n납입예정금액: 1,725,651원 (3.656%, 발송일자 기준)",
     "post_time": "2026-11-08T11:49:00+09:00",
-    "expect": {"status": "schedule", "amount": "1725651", "due_date": "2026-11-23"}
+    "expect": {
+      "status": "schedule",
+      "amount": "1725651",
+      "due_date": "2026-11-23"
+    }
   },
   {
     "id": "toss_bank_in",
@@ -211,7 +336,13 @@
     "sub_text": "토스뱅크",
     "body": "홍길동(가게) → 내 토스뱅크 통장",
     "post_time": "2026-11-05T06:55:30+09:00",
-    "expect": {"status": "transaction", "parser": "app.toss", "direction": "in", "issuer": "토스뱅크", "kind": "transfer"}
+    "expect": {
+      "status": "transaction",
+      "parser": "app.toss",
+      "direction": "in",
+      "issuer": "토스뱅크",
+      "kind": "transfer"
+    }
   },
   {
     "id": "toss_reminder",
@@ -219,7 +350,11 @@
     "title": "출금 안내",
     "body": "내일은 넷플릭스 이용료 나가는 날이에요.",
     "post_time": "2026-11-06T14:05:00+09:00",
-    "expect": {"status": "schedule", "parser": "schedule.reminder", "due_date": "2026-11-07"}
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.reminder",
+      "due_date": "2026-11-07"
+    }
   },
   {
     "id": "toss_securities_news",
@@ -228,7 +363,9 @@
     "sub_text": "토스증권",
     "body": "NAVER 3.4% 상승, 오른 이유를 요약했어요.\n\n* 알림 끄기는 토스증권 설정에서",
     "post_time": "2026-11-10T11:12:59+09:00",
-    "expect": {"status": "ignored"}
+    "expect": {
+      "status": "ignored"
+    }
   },
   {
     "id": "toss_ad",
@@ -237,7 +374,9 @@
     "sub_text": "토스뱅크",
     "body": "(광고) 수도권 전세 7억 넘어도 대출 신청 가능해요.\n\n* 알림 끄기는 토스뱅크 설정에서",
     "post_time": "2026-11-06T09:05:00+09:00",
-    "expect": {"status": "ignored"}
+    "expect": {
+      "status": "ignored"
+    }
   },
   {
     "id": "shinhan_sol_out",
@@ -246,8 +385,15 @@
     "sub_text": "입출금 알림",
     "body": "1,000원 홍길동 입출금(0000)\r\n11.09 16:41 ",
     "post_time": "2026-11-09T16:41:30+09:00",
-    "expect": {"status": "transaction", "parser": "app.shinhan_sol", "amount": "1000", "merchant": "홍길동",
-               "account_label": "신한은행 입출금(0000)", "occurred_at": "2026-11-09T16:41", "kind": "transfer"}
+    "expect": {
+      "status": "transaction",
+      "parser": "app.shinhan_sol",
+      "amount": "1000",
+      "merchant": "홍길동",
+      "account_label": "신한은행 입출금(0000)",
+      "occurred_at": "2026-11-09T16:41",
+      "kind": "transfer"
+    }
   },
   {
     "id": "shinhan_otp",
@@ -255,7 +401,9 @@
     "title": "motp",
     "body": "모바일OTP 인증 요청이 있습니다. 터치하여 PIN번호를 입력해 주세요.",
     "post_time": "2026-11-06T13:14:00+09:00",
-    "expect": {"status": "ignored"}
+    "expect": {
+      "status": "ignored"
+    }
   },
   {
     "id": "hanacard_app",
@@ -263,8 +411,16 @@
     "title": "(결제) 4,500원",
     "body": "동네식품 / 신용(일시불,1*2*) / 11.09 15:16 / 누적이용금액 1,146,438원",
     "post_time": "2026-11-09T15:21:00+09:00",
-    "expect": {"status": "transaction", "parser": "app.hanacard", "amount": "4500", "merchant": "동네식품",
-               "account_label": "하나1*2*", "occurred_at": "2026-11-09T15:16", "cumulative": 1146438, "installment": "일시불"}
+    "expect": {
+      "status": "transaction",
+      "parser": "app.hanacard",
+      "amount": "4500",
+      "merchant": "동네식품",
+      "account_label": "하나1*2*",
+      "occurred_at": "2026-11-09T15:16",
+      "cumulative": 1146438,
+      "installment": "일시불"
+    }
   },
   {
     "id": "hanacard_bill",
@@ -272,7 +428,11 @@
     "title": "하나카드 결제예정금액",
     "body": "홍*동 님 11월 13일 결제예정금액은 319,938원 입니다.",
     "post_time": "2026-11-09T10:16:00+09:00",
-    "expect": {"status": "schedule", "amount": "319938", "due_date": "2026-11-13"}
+    "expect": {
+      "status": "schedule",
+      "amount": "319938",
+      "due_date": "2026-11-13"
+    }
   },
   {
     "id": "hanacard_coupon",
@@ -280,7 +440,9 @@
     "title": "쿠폰만료안내",
     "body": "마트쿠폰 만료 8일전 안내 유효기간 만료예정 쿠폰의 상세 내용은 쿠폰함에서 확인 가능합니다.",
     "post_time": "2026-11-06T15:07:00+09:00",
-    "expect": {"status": "ignored"}
+    "expect": {
+      "status": "ignored"
+    }
   },
   {
     "id": "samsung_pay",
@@ -288,7 +450,12 @@
     "title": "₩19,800 결제 완료",
     "body": "과일가게(본점)",
     "post_time": "2026-11-07T20:23:20+09:00",
-    "expect": {"status": "transaction", "parser": "app.samsung_pay", "amount": "19800", "merchant": "과일가게(본점)"}
+    "expect": {
+      "status": "transaction",
+      "parser": "app.samsung_pay",
+      "amount": "19800",
+      "merchant": "과일가게(본점)"
+    }
   },
   {
     "id": "group_summary",
@@ -296,7 +463,9 @@
     "title": "null",
     "body": "",
     "post_time": "2026-11-04T15:01:16+09:00",
-    "expect": {"status": "dropped"}
+    "expect": {
+      "status": "dropped"
+    }
   },
   {
     "id": "redacted",
@@ -304,7 +473,9 @@
     "title": "",
     "body": "민감한 알림 콘텐츠 숨김",
     "post_time": "2026-11-09T08:10:00+09:00",
-    "expect": {"status": "ignored"}
+    "expect": {
+      "status": "ignored"
+    }
   },
   {
     "id": "unknown_app",
@@ -312,7 +483,9 @@
     "title": "보상 1,000원 지급",
     "body": "출석 보상이 지급되었어요",
     "post_time": "2026-11-09T08:10:00+09:00",
-    "expect": {"status": "dropped"}
+    "expect": {
+      "status": "dropped"
+    }
   },
   {
     "id": "financial_app_unknown_format",
@@ -320,6 +493,79 @@
     "title": "KB Pay",
     "body": "12,000원 결제가 완료되었습니다. 가맹점: 테스트상점",
     "post_time": "2026-11-09T08:10:00+09:00",
-    "expect": {"status": "unparsed"}
+    "expect": {
+      "status": "unparsed"
+    }
+  },
+  {
+    "id": "kakao_alimtalk_card",
+    "package": "com.kakao.talk",
+    "title": "신한카드",
+    "body": "신한카드(1234)승인 홍*동 12,000원(일시불)11/10 12:34 스타벅스 누적123,456원",
+    "post_time": "2026-11-10T12:34:30+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.card",
+      "issuer": "신한카드",
+      "account_label": "신한카드(1234)",
+      "amount": "12000",
+      "merchant": "스타벅스",
+      "occurred_at": "2026-11-10T12:34",
+      "category": "식비"
+    }
+  },
+  {
+    "id": "kakao_personal_chat",
+    "package": "com.kakao.talk",
+    "title": "친구",
+    "body": "카드 승인 12,000원 나왔어 11/10 12:34",
+    "post_time": "2026-11-10T12:35:00+09:00",
+    "expect": {
+      "status": "dropped"
+    }
+  },
+  {
+    "id": "kakao_channel_ad",
+    "package": "com.kakao.talk",
+    "title": "현대카드",
+    "body": "(광고) 이번 주 혜택을 확인하세요",
+    "post_time": "2026-11-10T12:35:00+09:00",
+    "expect": {
+      "status": "dropped"
+    }
+  },
+  {
+    "id": "untagged_sms_rep_number",
+    "package": "com.samsung.android.messaging",
+    "title": "1544-0000",
+    "body": "KB국민카드1234승인\n홍*동님\n8,000원 일시불\n11/10 08:10\nGS25\n누적8,000원",
+    "post_time": "2026-11-10T08:10:20+09:00",
+    "expect": {
+      "status": "transaction",
+      "amount": "8000",
+      "merchant": "GS25"
+    }
+  },
+  {
+    "id": "untagged_sms_personal_number",
+    "package": "com.samsung.android.messaging",
+    "title": "010-0000-0000",
+    "body": "KB국민카드1234승인\n홍*동님\n8,000원 일시불\n11/10 08:10\nGS25\n누적8,000원",
+    "post_time": "2026-11-10T08:10:20+09:00",
+    "expect": {
+      "status": "dropped"
+    }
+  },
+  {
+    "id": "samsung_wallet_won_title",
+    "package": "com.samsung.android.spay",
+    "title": "19,800원 결제 완료",
+    "body": "과일가게",
+    "post_time": "2026-11-07T20:23:20+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.samsung_pay",
+      "amount": "19800"
+    }
   }
 ]

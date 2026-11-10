@@ -60,6 +60,14 @@ FINANCIAL_PACKAGES: dict[str, str] = {
     "com.kakaopay.app": "카카오페이",
 }
 
+# KakaoTalk carries both personal chats and 알림톡 from card/bank channels.
+KAKAO_PACKAGES: frozenset[str] = frozenset({"com.kakao.talk"})
+
+# A chat / SMS sender that is a company, not a person: 1588-0000 style
+# representative numbers, or a channel / contact name mentioning a bank or card.
+_REP_NUMBER_RE = re.compile(r"^1[5-9]\d{2}-?\d{4}$")
+_FIN_SENDER_RE = re.compile(r"카드|은행|뱅크|페이|증권|캐피탈|저축|금고|신협|Pay|PAY|Bank|BANK")
+
 _OTP_RE = re.compile(r"인증번호|본인확인|OTP|인증 ?요청|보안코드|승인번호\s*\[?\d{4,}")
 _MONEY_RE = re.compile(r"[\d,]+\s*원|₩\s*[\d,]+|USD\s*[\d.,]+")
 _MOVE_RE = re.compile(r"승인|취소|입금|출금|결제|이체|송금|납부|환불")
@@ -67,6 +75,20 @@ _MOVE_RE = re.compile(r"승인|취소|입금|출금|결제|이체|송금|납부|
 
 def is_messaging(package: str) -> bool:
     return package in MESSAGING_PACKAGES
+
+
+def is_kakao(package: str) -> bool:
+    return package in KAKAO_PACKAGES
+
+
+def is_chat(package: str) -> bool:
+    """Apps whose notifications carry a per-message ``android.messages`` list."""
+    return package in MESSAGING_PACKAGES or package in KAKAO_PACKAGES
+
+
+def is_financial_sender(sender: str) -> bool:
+    sender = clean(sender)
+    return bool(_REP_NUMBER_RE.match(sender) or _FIN_SENDER_RE.search(sender))
 
 
 def is_financial_package(package: str, extra: frozenset[str] | set[str] = frozenset()) -> bool:

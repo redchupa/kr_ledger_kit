@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import voluptuous as vol
@@ -45,6 +45,7 @@ from .const import (
     VERSION,
 )
 from .engine import RawNotification
+from .engine.android import raws_from_attributes
 from .engine.processor import LedgerProcessor, Outcome
 from .engine.store import LedgerStore
 
@@ -71,26 +72,13 @@ def _split(value: str | None) -> list[str]:
     return [v.strip() for v in value.replace("\n", ",").split(",") if v.strip()]
 
 
-def raw_from_state(state: State) -> RawNotification | None:
-    """Build a RawNotification from a companion-app ``*_last_notification`` state."""
-    attrs = state.attributes
-    package = attrs.get("package")
-    post_ms = attrs.get("post_time")
-    if not package or post_ms is None:
-        return None
-    try:
-        post_time = dt_util.as_local(datetime.fromtimestamp(int(post_ms) / 1000, UTC))
-    except (TypeError, ValueError, OverflowError):
-        return None
-    return RawNotification(
-        package=str(package),
-        title=attrs.get("android.title"),
-        text=attrs.get("android.text"),
-        big_text=attrs.get("android.bigText"),
-        sub_text=attrs.get("android.subText"),
-        noti_id=str(attrs.get("pde_noti_id") or ""),
-        post_time=post_time,
-        entity_id=state.entity_id,
+def raws_from_state(state: State, previous: State | None = None) -> list[RawNotification]:
+    """Notifications in a last-notification or active-notification state that ``previous`` didn't have."""
+    return raws_from_attributes(
+        state.attributes,
+        state.entity_id,
+        dt_util.get_default_time_zone(),
+        previous.attributes if previous is not None else None,
     )
 
 
@@ -121,11 +109,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: KrLedgerConfigEntry) -> 
         old = event.data["old_state"]
         if new is None:
             return
-        if old is not None and old.attributes.get("post_time") == new.attributes.get("post_time"):
-            return  # same notification, another attribute changed
-        if (raw := raw_from_state(new)) is None:
-            return
-        hass.async_create_task(_async_process(hass, entry, [raw], live=True), eager_start=True)
+        # Only notifications that are new compared to the previous state; anything
+        # seen before (e.g. re-reported after a restart) is also caught by fingerprint.
+        raws = raws_from_state(new, old)
+        if raws:
+            hass.async_create_task(_async_process(hass, entry, raws, live=True), eager_start=True)
 
     if sensors:
         entry.async_on_unload(async_track_state_change_event(hass, sensors, _state_changed))
@@ -234,9 +222,10 @@ async def async_import_history(hass: HomeAssistant, entry: KrLedgerConfigEntry, 
                 hass, start, None, eid, no_attributes=False, include_start_time_state=True
             )
         )
+        previous: State | None = None
         for state in states.get(entity_id, []):
-            if raw := raw_from_state(state):
-                raws.append(raw)
+            raws.extend(raws_from_state(state, previous))
+            previous = state
     raws.sort(key=lambda r: r.post_time)
     await _async_process(hass, entry, raws, live=False)
     return len(raws)
