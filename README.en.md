@@ -21,6 +21,23 @@ No bank login, no cloud, no manual entry. All data stays in your Home Assistant.
 > This integration targets **Korean** financial notification formats. Notifications from other
 > countries are not parsed.
 
+### 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="40%">
+      <img src="https://raw.githubusercontent.com/redchupa/kr_ledger_kit/main/images/screenshot-calendar.jpg" alt="Ledger calendar" width="300"/><br/>
+      <sub><b>Calendar and monthly summary</b><br/>spending (red) and income (blue) per day; tap a day for its entries</sub>
+    </td>
+    <td align="center" valign="top" width="60%">
+      <img src="https://raw.githubusercontent.com/redchupa/kr_ledger_kit/main/images/screenshot-bills.jpg" alt="Upcoming bills" width="440"/><br/>
+      <sub><b>Upcoming bills</b><br/>card bill and loan reminders collected from notifications</sub>
+      <br/><br/>
+      <sub>Taken in the HA companion app (dark theme).<br/>Merchant names and bill amounts are hidden.</sub>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## How it works

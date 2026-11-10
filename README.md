@@ -32,6 +32,23 @@ Home Assistant 통합입니다. 결제할 때마다 폰에 오는 알림이 그�
 > 💡 직접 입력할 필요가 없는 가계부입니다. 앱 설치 · 회원가입 · 은행 연동 없이,
 > **이미 폰에 오고 있는 알림**만으로 동작하고 **모든 데이터는 내 HA 안에만** 저장됩니다.
 
+### 📸 실제 사용 화면
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="40%">
+      <img src="https://raw.githubusercontent.com/redchupa/kr_ledger_kit/main/images/screenshot-calendar.jpg" alt="가계부 달력 화면" width="300"/><br/>
+      <sub><b>달력 · 이번 달 요약</b><br/>날짜마다 지출(빨강) · 수입(파랑), 누르면 그날 내역</sub>
+    </td>
+    <td align="center" valign="top" width="60%">
+      <img src="https://raw.githubusercontent.com/redchupa/kr_ledger_kit/main/images/screenshot-bills.jpg" alt="다가오는 결제 목록" width="440"/><br/>
+      <sub><b>다가오는 결제</b><br/>카드사 결제 예정 · 대출 납입 안내 문자를 모아서 표시</sub>
+      <br/><br/>
+      <sub>폰의 HA 앱 화면 그대로입니다 (다크 테마).<br/>사용처 이름과 결제 예정 금액은 가렸습니다.</sub>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## 📑 목차
@@ -265,6 +282,7 @@ HA 좌측 사이드바에 **HACS** 또는 **Marketplace** 메뉴가 있으면 OK
 # 4단계 · 가계부 패널 사용법
 
 사이드바 **가계부**를 누르면 열립니다. 폰의 HA 앱에서도 똑같이 보입니다.
+([맨 위의 실제 사용 화면](#-실제-사용-화면) 참고)
 
 ### 화면 맨 위 — 이번 달 요약
 
