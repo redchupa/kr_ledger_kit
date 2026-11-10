@@ -100,6 +100,23 @@ A **가계부 (Ledger)** item appears in the sidebar.
 - Personal SMS, personal chats and OTP messages are dropped before anything is stored.
 - Data lives only in `/config/kr_ledger/ledger.db` and is included in HA backups.
 
+## Families: family cards and iPhones
+
+KR Ledger can only read payments whose notifications arrive on an **Android** phone running the companion app.
+
+- **iPhones can't be used.** iOS doesn't let apps read other apps' notifications, so the iOS companion app has no notification sensors.
+- **Family cards notify the person using them.** A family card issued in your name usually sends its approval SMS / app alerts to the family member's phone, not yours, so those payments never reach KR Ledger.
+
+What to do:
+
+| Situation | Fix | Result |
+|---|---|---|
+| Family member uses an iPhone (most common) | Ask the card company for the service that also sends family-card approvals to the **primary cardholder** ("가족카드 이용내역 본인 수신") | Each family-card payment also texts your phone and is recorded automatically, as a **separate card** (different card number) |
+| The card company has no such service | Let the family member use your own card instead | Recorded, but you can no longer tell who paid |
+| Family member uses Android | Set up step 1 on their phone and add their two sensors in KR Ledger's options | Their notifications land in the same ledger |
+
+Rename the family card in the panel's **계좌·카드 (accounts)** tab, e.g. "spouse's card", to see at a glance who paid.
+
 ## Contributing
 
 Unrecognised formats show up in the panel's **확인 필요 (review)** tab. Please report them with names,
