@@ -209,7 +209,7 @@ class KrLedgerPanel extends HTMLElement {
       return this._load();
     }
     if (a === "refresh") return this._load();
-    if (a === "tab") { this._tab = el.dataset.v; return this._load(); }
+    if (a === "tab") { this._tab = el.dataset.v; this._render(); return this._load(); }
     if (a === "kind") { this._kind = el.dataset.v; return this._render(); }
     if (a === "day") { this._selected = this._selected === el.dataset.v ? null : el.dataset.v; return this._render(); }
     if (a === "tx") {
@@ -297,6 +297,9 @@ class KrLedgerPanel extends HTMLElement {
     const when = String(tx.occurred_at || "").slice(0, 16);
     if (when) msg.occurred_at = `${when}:00`;
     this._saving = true;
+    this._dialog.error = null;
+    this._dialog.saving = true;
+    this._render();
     try {
       if (this._dialog.mode === "edit") {
         await this._ws({ type: "kr_ledger/transaction/update", tx_id: this._dialog.tx.id, ...msg });
@@ -307,8 +310,11 @@ class KrLedgerPanel extends HTMLElement {
       this._dialog = null;
       await this._load();
     } catch (err) {
-      this._dialog.error = `저장하지 못했습니다: ${err.message || err}`;
-      this._render();
+      if (this._dialog) {
+        this._dialog.error = `저장하지 못했습니다: ${err.message || err}`;
+        this._dialog.saving = false;
+        this._render();
+      }
     } finally {
       this._saving = false;
     }
@@ -481,7 +487,7 @@ class KrLedgerPanel extends HTMLElement {
     if (!list.length) return `<div class="card empty">아직 계좌·카드가 없습니다</div>`;
     return `<div class="card"><div class="section-h"><h2>계좌·카드</h2><span class="t">제외하면 합계에서 빠집니다</span></div>
       ${list.map((a) => `<div class="acc">
-        <div><div>${esc(a.name || a.label)}</div><div class="lbl">${esc(a.label)} · ${a.tx_count}건</div></div>
+        <div><div>${esc(a.name || a.label)}</div><div class="lbl">${a.name && a.name !== a.label ? `${esc(a.label)} · ` : ""}${a.tx_count}건</div></div>
         <div class="ctl">
           <input type="text" name="name" data-acc="${a.id}" value="${esc(a.name || "")}" placeholder="이름" aria-label="이름">
           <select name="owner_type" data-acc="${a.id}" aria-label="구분">
@@ -523,7 +529,7 @@ class KrLedgerPanel extends HTMLElement {
           </div>`
         : `<div class="actions" style="justify-content:space-between">
             ${mode === "edit" ? `<button class="btn danger" data-a="delete">삭제</button>` : "<span></span>"}
-            <span class="actions"><button class="btn" data-a="close">취소</button><button class="btn primary" data-a="save">저장</button></span>
+            <span class="actions"><button class="btn" data-a="close">취소</button><button class="btn primary" data-a="save" ${this._dialog.saving ? "disabled" : ""}>${this._dialog.saving ? "저장 중…" : "저장"}</button></span>
           </div>`}
     </div></div>`;
   }
