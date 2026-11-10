@@ -118,6 +118,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: KrLedgerConfigEntry) -> 
     if sensors:
         entry.async_on_unload(async_track_state_change_event(hass, sensors, _state_changed))
 
+        async def _scan_current() -> None:
+            # Notifications already in the shade when we start (e.g. a newly added
+            # active-notification sensor). Fingerprints keep this idempotent.
+            raws: list[RawNotification] = []
+            for entity_id in sensors:
+                if (state := hass.states.get(entity_id)) is not None:
+                    raws.extend(raws_from_state(state))
+            if raws:
+                await _async_process(hass, entry, sorted(raws, key=lambda r: r.post_time), live=False)
+
+        entry.async_create_background_task(hass, _scan_current(), f"{DOMAIN}_scan_current")
+
     async def _midnight(now: datetime) -> None:
         retention = int(entry.options.get(CONF_RAW_RETENTION_DAYS, DEFAULT_RAW_RETENTION_DAYS))
         await hass.async_add_executor_job(store.purge_raw, dt_util.now() - timedelta(days=retention))
