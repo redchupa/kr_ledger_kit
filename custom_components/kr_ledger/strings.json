@@ -1,0 +1,93 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "KR Ledger",
+        "description": "Pick the Android companion app `Last notification` sensors to read card and bank notifications from. Personal text messages are filtered out and never stored.",
+        "data": {
+          "notification_sensors": "Notification sensors",
+          "owner_names": "Your names (comma separated)",
+          "import_days": "Import past days from history"
+        },
+        "data_description": {
+          "notification_sensors": "Settings > Companion app > Manage sensors > Last notification. Allow-list your card, bank and SMS apps there.",
+          "owner_names": "Used to recognise transfers between your own accounts, e.g. 홍길동. Masked forms like 홍*동 are matched automatically.",
+          "import_days": "Recorder keeps about 10 days. 0 = start from now."
+        }
+      }
+    },
+    "error": {
+      "no_sensor": "Select at least one notification sensor."
+    },
+    "abort": {
+      "single_instance_allowed": "KR Ledger is already set up."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "KR Ledger options",
+        "data": {
+          "notification_sensors": "Notification sensors",
+          "owner_names": "Your names (comma separated)",
+          "extra_packages": "Extra app packages (comma separated)",
+          "dedupe_minutes": "Duplicate window (minutes)",
+          "raw_retention_days": "Keep raw notifications (days)"
+        },
+        "data_description": {
+          "extra_packages": "Android package names of other financial apps whose notifications should be read.",
+          "dedupe_minutes": "One payment reported by SMS, card app and Samsung Pay within this window is merged.",
+          "raw_retention_days": "Original notification text is deleted after this many days. Ledger entries are kept."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "today_expense": {"name": "Today expense"},
+      "month_expense": {"name": "Month expense"},
+      "month_income": {"name": "Month income"},
+      "last_transaction": {"name": "Last transaction"},
+      "unparsed": {"name": "Notifications to review"}
+    }
+  },
+  "selector": {
+    "kind": {
+      "options": {
+        "expense": "Expense",
+        "income": "Income",
+        "transfer": "Transfer",
+        "refund": "Refund"
+      }
+    }
+  },
+  "services": {
+    "import_history": {
+      "name": "Import history",
+      "description": "Read past notifications from the recorder into the ledger. Safe to run again.",
+      "fields": {"days": {"name": "Days", "description": "How many days back."}}
+    },
+    "add_transaction": {
+      "name": "Add transaction",
+      "description": "Add a manual ledger entry (cash etc.).",
+      "fields": {
+        "amount": {"name": "Amount", "description": "Amount in KRW."},
+        "kind": {"name": "Kind", "description": "expense, income, transfer or refund."},
+        "merchant": {"name": "Merchant", "description": "Where / from whom."},
+        "category": {"name": "Category", "description": "Category name."},
+        "memo": {"name": "Memo", "description": "Free text."},
+        "account": {"name": "Account", "description": "Card or account label."},
+        "when": {"name": "When", "description": "Defaults to now."}
+      }
+    },
+    "delete_transaction": {
+      "name": "Delete transaction",
+      "description": "Hide a ledger entry.",
+      "fields": {"id": {"name": "ID", "description": "Transaction id."}}
+    },
+    "reprocess": {
+      "name": "Reprocess unrecognised",
+      "description": "Run the current parser rules again on notifications waiting for review."
+    }
+  }
+}

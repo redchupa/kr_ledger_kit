@@ -1,0 +1,25 @@
+name: 버그 / Bug report
+description: 잘못 기록되거나 동작하지 않는 문제
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇이 잘못됐나요
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: 관련 알림 (익명화)
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: HA 버전 / KR Ledger 버전
+      placeholder: 2026.11.0 / 0.1.0
+  - type: textarea
+    id: logs
+    attributes:
+      label: 로그 (custom_components.kr_ledger)
+      render: text

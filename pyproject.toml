@@ -1,0 +1,22 @@
+[project]
+name = "kr-ledger-kit"
+version = "0.1.0"
+description = "Home Assistant household ledger built from Korean card / bank notifications"
+requires-python = ">=3.13"
+license = "MIT"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+
+[tool.ruff]
+line-length = 140
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501", "SIM108"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["engine", "custom_components"]
+known-third-party = ["homeassistant", "voluptuous"]

@@ -1,0 +1,14 @@
+{
+  "domain": "kr_ledger",
+  "name": "KR Ledger (가계부)",
+  "codeowners": ["@redchupa"],
+  "config_flow": true,
+  "dependencies": ["http", "frontend", "panel_custom", "recorder", "websocket_api"],
+  "documentation": "https://github.com/redchupa/kr_ledger_kit",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/redchupa/kr_ledger_kit/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}

@@ -1,0 +1,40 @@
+name: 새 알림 형식 제보 / New notification format
+description: 인식되지 않는 카드·은행 알림을 알려 주세요
+labels: ["new format"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **반드시 익명화해 주세요.** 이름, 계좌번호, 카드번호, 전화번호, 잔액은 지우거나 바꿔 주세요.
+        `python tools/anonymize.py --owner 내이름` 을 쓰면 편합니다.
+  - type: input
+    id: issuer
+    attributes:
+      label: 카드사 / 은행 / 앱
+      placeholder: 예) 삼성카드 문자, 우리WON뱅킹 앱
+    validations:
+      required: true
+  - type: input
+    id: package
+    attributes:
+      label: 앱 패키지명 (패널 '확인 필요' 탭에 표시됨)
+      placeholder: com.samsung.android.messaging
+  - type: textarea
+    id: sample
+    attributes:
+      label: 알림 제목과 본문 (익명화)
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대하는 결과
+      placeholder: 지출 12,000원 / 가맹점 스타벅스 / 11월 10일 12:34
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 개인정보
+      options:
+        - label: 실제 이름·계좌번호·카드번호·전화번호를 지웠습니다
+          required: true

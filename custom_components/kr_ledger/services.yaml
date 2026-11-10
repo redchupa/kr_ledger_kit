@@ -1,0 +1,56 @@
+import_history:
+  fields:
+    days:
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 365
+          mode: box
+
+add_transaction:
+  fields:
+    amount:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 1000000000
+          mode: box
+    kind:
+      default: expense
+      selector:
+        select:
+          translation_key: kind
+          options:
+            - expense
+            - income
+            - transfer
+            - refund
+    merchant:
+      selector:
+        text:
+    category:
+      selector:
+        text:
+    memo:
+      selector:
+        text:
+    account:
+      selector:
+        text:
+    when:
+      selector:
+        datetime:
+
+delete_transaction:
+  fields:
+    id:
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 100000000
+          mode: box
+
+reprocess:
