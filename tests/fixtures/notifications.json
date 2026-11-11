@@ -581,5 +581,44 @@
       "amount": "1161511",
       "due_date": "2026-11-12"
     }
+  },
+  {
+    "id": "sms_telecom_bill_autopay",
+    "package": "com.samsung.android.messaging",
+    "title": "114",
+    "body": "<제목: 11월 SKT 요금안내서>\n[Web발신]\n【SKT 2026년 11월 요금안내서】\n홍**동 고객님, 안녕하세요.\n고객님의 2026년 11월 납부하실 금액은 총 32,800원 입니다.\n○ 고객번호 : 010-**00-0000 외 1 대\n○ 이용기간 : 2026.10.1.~10.31.\n○ 작성일자 : 2026.11.3.\n \n[이용요금 상세안내]\n① 통신서비스요금 : 77,800원\n② 기타요금 : -45,000원\n(부가세 대상 금액 29,818원, 부가세 2,982원)\n \n[납부정보]\n◆ 자동납부접수번호 : 0000000000\n◆ 자동납부 : 토스뱅크 23일 인출 예정\n※ 당월 이후 납부시 2% 가산금이 2개월 후에 청구됩니다.\n \n아래 링크를 눌러 요금안내서를 쉽고 빠르게 확인해 보세요.\nhttps://pdfbill.example.com/xxxx\n■ 문의: SKT 고객센터(114)",
+    "post_time": "2026-11-11T14:08:03+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.bill",
+      "issuer": "SKT",
+      "title": "통신요금 자동납부",
+      "amount": "32800",
+      "due_date": "2026-11-23"
+    }
+  },
+  {
+    "id": "sms_local_tax_deadline",
+    "package": "com.samsung.android.messaging",
+    "title": "시흥시청",
+    "body": "[Web발신]\n[시흥시] 홍*동님 2026년 11월 지방세 고지\n- 납부금액 : 125,000원\n- 납부기한 : 11.30\n위택스에서 납부 가능합니다.",
+    "post_time": "2026-11-11T10:00:00+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.bill",
+      "title": "세금 납부",
+      "amount": "125000",
+      "due_date": "2026-11-30"
+    }
+  },
+  {
+    "id": "sms_bill_without_date_needs_review",
+    "package": "com.samsung.android.messaging",
+    "title": "1588-0000",
+    "body": "[Web발신]\n[○○가스] 홍*동 고객님 이번 달 납부하실 금액은 41,200원입니다.",
+    "post_time": "2026-11-11T10:00:00+09:00",
+    "expect": {
+      "status": "unparsed"
+    }
   }
 ]

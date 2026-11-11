@@ -101,6 +101,7 @@ A **가계부 (Ledger)** item appears in the sidebar.
 ## Features
 
 - Monthly calendar with daily spending / income, daily list, category breakdown, upcoming bills
+  (card bills, loan payments, phone / utility bills and tax notices)
 - One payment reported by SMS + card app + Samsung Pay → **one entry**
 - Cancellations subtract from spending; foreign-currency payments are totalled separately
 - Own-account transfers and card-bill payments are not counted as spending
