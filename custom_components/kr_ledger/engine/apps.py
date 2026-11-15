@@ -58,12 +58,15 @@ def parse_kakaobank(raw: RawNotification) -> ParsedTransaction | None:
 
 
 # ---------------------------------------------------------------- 토스 / 토스뱅크
-_TOSS_TITLE_RE = re.compile(r"^([\d,]+)\s*원\s*(입금|출금|결제|송금|환불|결제 취소|결제취소)")
+# "6,585원 입금" / "요금납부 19,100원 출금" (card bill paid from 토스뱅크)
+_TOSS_TITLE_RE = re.compile(r"^(?:[가-힣A-Za-z]+\s+)?([\d,]+)\s*원\s*(입금|출금|결제|송금|환불|결제 취소|결제취소)")
 _TOSS_TITLE2_RE = re.compile(r"^(입금|출금|결제|송금)\s*([\d,]+)\s*원")
 
 
 def parse_toss(raw: RawNotification) -> ParsedTransaction | None:
     title = clean(raw.clean_title)
+    if "실패" in title:
+        return None  # "요금납부 132,810원 출금 실패": nothing moved
     if m := _TOSS_TITLE_RE.match(title):
         amount, kind = m.group(1), m.group(2)
     elif m := _TOSS_TITLE2_RE.match(title):
@@ -123,6 +126,37 @@ def parse_shinhan_sol(raw: RawNotification) -> ParsedTransaction | None:
         merchant=m.group(2) or None,
         account_label=f"신한은행 {m.group(3)}",
         is_cancel="취소" in title,
+        balance=_balance(raw.body),
+    )
+
+
+# ---------------------------------------------------------------- 케이뱅크
+_KBANK_FIRST_RE = re.compile(r"^(입금|출금)(취소)?\s*([\d,]+)\s*원$")
+
+
+def parse_kbank(raw: RawNotification) -> ParsedTransaction | None:
+    """title ``케이뱅크`` / body ``입금 3,000,000원 / 상대방 | 생활통장(0000) / 잔액 3,109,662원`` (one line each)"""
+    ls = lines(raw.body)
+    if not ls or not (m := _KBANK_FIRST_RE.match(ls[0])):
+        return None
+    direction = Direction.IN if m.group(1) == "입금" else Direction.OUT
+    counterparty = account = None
+    if len(ls) > 1:
+        left, _, right = ls[1].partition("|")
+        left = re.sub(r"\s*\(\s*(.*?)\s*\)", r"(\1)", left)  # "대출실행 ( 원금 )" -> "대출실행(원금)"
+        counterparty = re.sub(r"\s+", " ", left).strip() or None
+        account = right.strip() or None
+    return ParsedTransaction(
+        direction=direction,
+        amount=parse_decimal(m.group(3)),  # type: ignore[arg-type]
+        occurred_at=raw.post_time,
+        method=Method.BANK,
+        source_kind=SourceKind.BANK_APP,
+        parser="app.kbank",
+        issuer="케이뱅크",
+        merchant=counterparty,
+        account_label=f"케이뱅크 {account}" if account else "케이뱅크",
+        is_cancel=bool(m.group(2)),
         balance=_balance(raw.body),
     )
 
@@ -199,6 +233,7 @@ APP_PARSERS: dict[str, AppParser] = {
     "com.kakaobank.channel": parse_kakaobank,
     "viva.republica.toss": parse_toss,
     "com.shinhan.sbanking": parse_shinhan_sol,
+    "com.kbankwith.smartbank": parse_kbank,
     "com.hanaskcard.paycla": parse_hanacard_app,
     "com.hanaskcard.rocomo.potal": parse_hanacard_app,
     "com.samsung.android.spay": parse_samsung_pay,

@@ -10,7 +10,7 @@ from .normalize import clean, infer_future_date, parse_decimal
 
 KEYWORDS_RE = re.compile(
     r"결제금액|출금예정|카드대금|결제예정|납입예정|납입 예정|납입일|청구금액|이용대금|나가는 날"
-    r"|납부하실\s*금액|납부\s*금액|인출\s*예정|납부\s*기한|요금\s*안내"
+    r"|납부하실\s*금액|납부\s*금액|인출\s*예정|납부\s*기한|요금\s*안내|납입\s*기일"
 )
 
 _ISSUER_RE = re.compile(r"\[([^\]]*(?:카드|은행|뱅크))\]")
@@ -25,6 +25,8 @@ _DAY_DUE_RE = re.compile(r"(?<!\d)(\d{1,2})일은[^\n]*결제일")
 _LABELED_AMOUNT_RE = re.compile(r"(?:결제금액|결제예정금액|청구금액)\s*[:：]\s*([\d,]+)\s*원")
 # 대출: 납입일은 2026.11.23 ... 납입예정금액 : 1,725,651원
 _LOAN_DATE_RE = re.compile(r"납입일[은는]?\s*(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})")
+# 케이뱅크 대출실행안내: "대출납입기일 : 매월 13일"
+_LOAN_MONTHLY_RE = re.compile(r"납입\s*기일\s*[:：]?\s*매월\s*(\d{1,2})\s*일")
 _LOAN_AMOUNT_RE = re.compile(r"납입예정금액\s*:?\s*([\d,]+)\s*원|원리금\s*([\d,]+)\s*원")
 # 통신·공과금 요금안내: "납부하실 금액은 총 32,800원 ... 자동납부 : ○○은행 23일 인출 예정"
 _BILL_AMOUNT_RE = re.compile(r"(?:납부하실|납부할|청구|납부)\s*금액[은는]?\s*[:：]?\s*(?:총\s*)?([\d,]+)\s*원")
@@ -92,6 +94,11 @@ def parse_schedule(raw: RawNotification, issuer_hint: str) -> ParsedSchedule | N
         loan = re.search(r"(\S*대출)\(?(\d{4})?\)?", text)
         name = loan.group(1) if loan else "대출"
         return ParsedSchedule(issuer=issuer, title=f"{name} 원리금 납입", parser="schedule.loan", amount=amount, due_date=due)
+
+    if "대출" in text and (m := _LOAN_MONTHLY_RE.search(text)):
+        # New loan: the first payment is next month at the earliest, never the day it was taken out.
+        due = _next_day_of_month(int(m.group(1)), raw.post_time.date() + timedelta(days=1))
+        return ParsedSchedule(issuer=issuer, title="대출 원리금 납입", parser="schedule.loan", due_date=due)
 
     if bill := _parse_bill(text, issuer, raw.post_time):
         return bill

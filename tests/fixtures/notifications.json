@@ -620,5 +620,132 @@
     "expect": {
       "status": "unparsed"
     }
+  },
+  {
+    "id": "sms_kb_bank_amount_without_won",
+    "package": "com.samsung.android.messaging",
+    "title": "국민은행",
+    "body": "[Web발신]\n[KB]11/12 12:05\n123456**789\n동네마트\n출금\n160,370\n잔액626,471",
+    "post_time": "2026-11-12T12:05:51+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.bank",
+      "direction": "out",
+      "amount": "160370",
+      "merchant": "동네마트",
+      "issuer": "KB국민은행",
+      "occurred_at": "2026-11-12T12:05",
+      "kind": "expense"
+    }
+  },
+  {
+    "id": "sms_loan_notice_is_schedule_not_withdrawal",
+    "package": "com.samsung.android.messaging",
+    "title": "1522-1000",
+    "body": "<제목: 대출실행안내>\n[Web발신]\n[케이뱅크] 대출이 실행되었습니다 \n\n■ 홍길*님, 대출 상세 안내\n- 대출금 : 3,000,000원\n- 금리 : 5.77%\n- 만기일 : 2027년 11월 13일\n- 대출납입기일 : 매월 13일\n\n■ 대출 상환 안내\n- 대출금 상환은 고객님 명의계좌나 케이뱅크 대출금 상환 전용 계좌로만 가능합니다.",
+    "post_time": "2026-11-13T09:53:52+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.loan",
+      "issuer": "케이뱅크",
+      "title": "대출 원리금 납입",
+      "due_date": "2026-12-13"
+    }
+  },
+  {
+    "id": "kbank_app_loan_proceeds",
+    "package": "com.kbankwith.smartbank",
+    "title": "케이뱅크",
+    "body": "입금 3,000,000원\n대출실행 ( 원금 )  | 생활통장(0000)\n잔액 3,109,662원",
+    "post_time": "2026-11-13T09:54:14+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.kbank",
+      "direction": "in",
+      "amount": "3000000",
+      "merchant": "대출실행(원금)",
+      "account_label": "케이뱅크 생활통장(0000)",
+      "balance": 3109662,
+      "kind": "transfer",
+      "category": "대출"
+    }
+  },
+  {
+    "id": "kbank_app_transfer_out",
+    "package": "com.kbankwith.smartbank",
+    "title": "케이뱅크",
+    "body": "출금 3,000,000원\n홍길동 | 생활통장(0000)\n잔액 109,662원",
+    "post_time": "2026-11-13T09:54:54+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.kbank",
+      "direction": "out",
+      "amount": "3000000",
+      "merchant": "홍길동",
+      "kind": "transfer"
+    }
+  },
+  {
+    "id": "toss_card_bill_payment",
+    "package": "viva.republica.toss",
+    "title": "요금납부 19,100원 출금",
+    "body": "내 토스뱅크 통장 → 현대카드",
+    "sub_text": "토스뱅크",
+    "post_time": "2026-11-12T19:06:55+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.toss",
+      "direction": "out",
+      "amount": "19100",
+      "merchant": "현대카드",
+      "kind": "transfer",
+      "category": "카드대금"
+    }
+  },
+  {
+    "id": "toss_card_bill_payment_failed",
+    "package": "viva.republica.toss",
+    "title": "요금납부 132,810원 출금 실패",
+    "body": "잔액이 부족하여 일부 금액만 현대카드에 납부 되었어요.",
+    "sub_text": "토스뱅크",
+    "post_time": "2026-11-12T19:27:25+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "toss_same_day_payment_reminder",
+    "package": "viva.republica.toss",
+    "title": "오늘 납부 예정",
+    "body": "오늘 하나카드에서 319,938원 출금할 예정이에요. 토스뱅크 통장 (0000)에서 출금돼요.",
+    "sub_text": "토스뱅크",
+    "post_time": "2026-11-13T15:07:34+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "sms_card_company_payment_received",
+    "package": "com.samsung.android.messaging",
+    "title": "1577-6000",
+    "body": "[Web발신]\n[현대카드] 홍*동님 11/13 1,629,213원이 입금되었습니다",
+    "post_time": "2026-11-13T10:00:12+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "sms_card_truncated_merchant_category",
+    "package": "com.samsung.android.messaging",
+    "title": "롯데카드결재내역",
+    "body": "[Web발신]\nWWW.ALIEXPRE\nUSD 8.34 해외승인\n홍*동 롯데1*2*\n일시불 11/12 13:37\n누적4,708,513원",
+    "post_time": "2026-11-12T13:37:28+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.card",
+      "currency": "USD",
+      "amount": "8.34",
+      "category": "쇼핑"
+    }
   }
 ]

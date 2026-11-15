@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from .apps import APP_PARSERS
 from .filters import (
     FINANCIAL_PACKAGES,
@@ -20,6 +22,11 @@ from .sms_bank import parse_bank_sms
 from .sms_card import parse_card_sms
 
 _NOISE_MARKERS = ("(광고)", "알림 끄기는", "쿠폰", "이벤트", "혜택")
+# Notices about money that has not moved (or moved in another notification):
+# "오늘 하나카드에서 319,938원 출금할 예정이에요", "요금납부 132,810원 출금 실패"
+_NO_MOVEMENT_RE = re.compile(r"출금\s*실패|이체\s*실패|할\s*예정이에요|될\s*예정이에요|예정입니다")
+# Card company confirming it received a bill payment: "[현대카드] 홍*동님 11/13 1,629,213원이 입금되었습니다"
+_CARD_PAYMENT_ACK_RE = re.compile(r"\[[^\]]*카드\][^\n]*원이?\s*입금되었습니다")
 
 
 def parse(raw: RawNotification, extra_packages: frozenset[str] = frozenset()) -> ParseResult:
@@ -53,6 +60,8 @@ def parse(raw: RawNotification, extra_packages: frozenset[str] = frozenset()) ->
 
     if any(marker in text for marker in _NOISE_MARKERS) or not looks_like_money_movement(text):
         return ParseResult(Status.IGNORED, reason="no money movement")
+    if _NO_MOVEMENT_RE.search(text):
+        return ParseResult(Status.IGNORED, reason="notice, no money moved")
     return ParseResult(Status.UNPARSED, reason="no rule matched")
 
 
@@ -81,6 +90,8 @@ def _parse_sms(raw: RawNotification, text: str) -> ParseResult:
 
     if result := _try_message_parsers(raw, sender):
         return result
+    if _CARD_PAYMENT_ACK_RE.search(text):
+        return ParseResult(Status.IGNORED, reason="card bill payment received (bank side recorded)")
     if looks_like_money_movement(text) and not any(k in text for k in ("발송", "배송", "주문", "세금안내")):
         return ParseResult(Status.UNPARSED, reason="SMS with money but no rule matched")
     # Marketing / delivery / tax notices: not ours, don't keep the text.

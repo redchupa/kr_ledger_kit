@@ -183,7 +183,9 @@ _ASCII_RE = re.compile(r"^[A-Za-z0-9 .+\-]+$")
 
 def _kw_match(keyword: str, text: str) -> bool:
     if _ASCII_RE.match(keyword):
-        return re.search(rf"(?<![A-Za-z]){re.escape(keyword)}(?![A-Za-z])", text, re.IGNORECASE) is not None
+        # Card SMS cut merchant names short ("WWW.ALIEXPRE"), so longer keywords match as a prefix.
+        tail = "" if len(keyword) >= 5 else "(?![A-Za-z])"
+        return re.search(rf"(?<![A-Za-z]){re.escape(keyword)}{tail}", text, re.IGNORECASE) is not None
     return keyword in text
 
 
@@ -202,6 +204,7 @@ def categorize(
 # --------------------------------------------------------------------- classify
 
 _CARD_BILL_RE = re.compile(r"(롯데|현대|KB|국민|하나|신한|삼성|BC|비씨|NH|농협|우리)\s*카드")
+_LOAN_PROCEEDS_RE = re.compile(r"대출\s*실행|대출금\s*입금")
 
 
 @dataclass(slots=True)
@@ -218,6 +221,8 @@ def classify(
     if tx.is_cancel:
         return Classification(Kind.REFUND, categorize(tx.merchant, rules))
     if tx.method is Method.BANK:
+        if tx.direction is Direction.IN and tx.merchant and _LOAN_PROCEEDS_RE.search(tx.merchant):
+            return Classification(Kind.TRANSFER, "대출")  # borrowed money is not income
         if is_owner(tx.merchant, owners):
             return Classification(Kind.TRANSFER, "이체")
         if tx.merchant and _CARD_BILL_RE.search(tx.merchant):
