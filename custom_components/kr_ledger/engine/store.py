@@ -353,6 +353,16 @@ class LedgerStore:
                 with self._lock:
                     self.conn.executemany("DELETE FROM schedules WHERE id = ?", [(r["id"],) for r in rows])
                     self.conn.commit()
+            # The same bill reported again under another title (an app and an SMS, or an older
+            # version's wording): keep one row and take the newer title.
+            same = self._query(
+                "SELECT id, title FROM schedules WHERE issuer = ? AND due_date = ? AND amount = ?",
+                (issuer or "", _iso(due), _iso(amount)),
+            )
+            if same:
+                if same[0]["title"] != title:
+                    self._exec("UPDATE schedules SET title = ? WHERE id = ?", (title, same[0]["id"]))
+                return None
         cur = self._exec(
             "INSERT OR IGNORE INTO schedules (issuer, title, amount, due_date, raw_id, created_at) VALUES (?, ?, ?, ?, ?, ?)",
             (issuer or "", title, _iso(amount) if amount is not None else "", _iso(due) if due else "", raw_id, _now()),

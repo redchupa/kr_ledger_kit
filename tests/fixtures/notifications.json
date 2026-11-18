@@ -258,7 +258,8 @@
       "status": "schedule",
       "parser": "schedule.loan",
       "amount": "1725651",
-      "due_date": "2026-11-23"
+      "due_date": "2026-11-23",
+      "title": "주택담보대출(0000) 원리금 납입"
     }
   },
   {
@@ -326,7 +327,8 @@
     "expect": {
       "status": "schedule",
       "amount": "1725651",
-      "due_date": "2026-11-23"
+      "due_date": "2026-11-23",
+      "title": "주택담보대출(0000) 원리금 납입"
     }
   },
   {
@@ -746,6 +748,97 @@
       "currency": "USD",
       "amount": "8.34",
       "category": "쇼핑"
+    }
+  },
+  {
+    "id": "hanacard_app_bill_paid_notice",
+    "package": "com.hanaskcard.paycla",
+    "title": "결제일 출금내역 안내",
+    "body": "홍*동 님 11월 13일 결제대금 319,938원이 출금되었습니다.",
+    "post_time": "2026-11-16T10:39:57+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "hanacard_app_prepayment_notice",
+    "package": "com.hanaskcard.paycla",
+    "title": "선결제 알림",
+    "body": "홍*동 님 11월 17일 토스뱅크 계좌에서 345,278원이 선결제 되었습니다.",
+    "post_time": "2026-11-17T12:04:16+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "lotte_sms_bill_withdrawn_notice",
+    "package": "com.samsung.android.messaging",
+    "title": "롯데카드결재내역",
+    "body": "[Web발신]\n[롯데카드] 홍*동 회원님, 11/17 토스뱅크에서 2,670,115원 출금되었습니다.",
+    "post_time": "2026-11-17T11:58:24+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "kbpay_bill_paid_notice",
+    "package": "com.kbcard.cxh.appcard",
+    "title": "KB Pay",
+    "body": "KB국민카드 홍*동님 11/17 17:24 카드대금 165,001원 결제완료(오픈뱅킹) ",
+    "post_time": "2026-11-17T17:24:51+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "lotte_app_overpayment_refund_notice",
+    "package": "com.lcacApp",
+    "title": "홍*동님, 초과 납부한 금액을 환불받았어요.",
+    "body": "11/18(수)에 492,125원을 결제계좌로 돌려받았어요.",
+    "post_time": "2026-11-18T12:01:48+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "lotte_corporate_bill_amount_before_date",
+    "package": "com.samsung.android.messaging",
+    "title": "롯데 법인카드 결제내역",
+    "body": "[Web발신]\n[롯데법인] 홍*동님 11/13기준 576,130원 11/23 결제예정(토스뱅크)",
+    "post_time": "2026-11-16T13:00:42+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.card_bill",
+      "issuer": "롯데법인",
+      "amount": "576130",
+      "due_date": "2026-11-23"
+    }
+  },
+  {
+    "id": "kakaobank_app_credit_loan_interest",
+    "package": "com.kakaobank.channel",
+    "title": "대출 이자 납입일 안내",
+    "body": "신용대출(0000)의 이자 납입일은 2026.11.23 입니다.\n납입예정금액: 272,110원 (6.895%, 발송일자 기준)",
+    "post_time": "2026-11-16T11:52:43+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.loan",
+      "title": "신용대출(0000) 이자 납입",
+      "amount": "272110",
+      "due_date": "2026-11-23"
+    }
+  },
+  {
+    "id": "hanacard_app_gs25_category",
+    "package": "com.hanaskcard.paycla",
+    "title": "(결제) 41,100원",
+    "body": "지에스25은계점 / 신용(일시불,1*2*) / 11.15 19:25 / 누적이용금액 346,100원",
+    "post_time": "2026-11-15T19:25:20+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.hanacard",
+      "amount": "41100",
+      "category": "마트·생활"
     }
   }
 ]

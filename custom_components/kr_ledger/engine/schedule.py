@@ -13,7 +13,9 @@ KEYWORDS_RE = re.compile(
     r"|납부하실\s*금액|납부\s*금액|인출\s*예정|납부\s*기한|요금\s*안내|납입\s*기일"
 )
 
-_ISSUER_RE = re.compile(r"\[([^\]]*(?:카드|은행|뱅크))\]")
+_ISSUER_RE = re.compile(r"\[([^\]]*(?:카드|은행|뱅크|법인))\]")
+# [롯데법인] 홍*동님 11/13기준 576,130원 11/23 결제예정(토스뱅크)
+_AMOUNT_MD_RE = re.compile(r"([\d,]+)\s*원\s*(\d{1,2})/(\d{1,2})\s*(?:결제예정|출금예정)")
 
 # [롯데카드]11/16출금예정2,668,841원 / [현대카드] 홍*동님 11/12결제금액 1,009,601원
 # [KB국민카드]홍*동님 11/16 카드대금 1,540,916원
@@ -74,6 +76,15 @@ def parse_schedule(raw: RawNotification, issuer_hint: str) -> ParsedSchedule | N
             due_date=due,
         )
 
+    if m := _AMOUNT_MD_RE.search(text):
+        return ParsedSchedule(
+            issuer=issuer,
+            title="카드 결제 예정",
+            parser="schedule.card_bill",
+            amount=parse_decimal(m.group(1)),
+            due_date=infer_future_date(int(m.group(2)), int(m.group(3)), raw.post_time),
+        )
+
     if (dm := _DAY_DUE_RE.search(text)) and (am := _LABELED_AMOUNT_RE.search(text)):
         return ParsedSchedule(
             issuer=issuer,
@@ -91,9 +102,14 @@ def parse_schedule(raw: RawNotification, issuer_hint: str) -> ParsedSchedule | N
         amount = None
         if am := _LOAN_AMOUNT_RE.search(text):
             amount = parse_decimal(am.group(1) or am.group(2))
-        loan = re.search(r"(\S*대출)\(?(\d{4})?\)?", text)
-        name = loan.group(1) if loan else "대출"
-        return ParsedSchedule(issuer=issuer, title=f"{name} 원리금 납입", parser="schedule.loan", amount=amount, due_date=due)
+        # "주택담보대출(0000)의 다음 원리금 납입일" / "신용대출(0000)의 이자 납입일"
+        if loan := re.search(r"([가-힣]*대출)\((\d{3,4})\)", text):
+            name = f"{loan.group(1)}({loan.group(2)})"
+        else:
+            loan2 = re.search(r"([가-힣]+대출)", text)
+            name = loan2.group(1) if loan2 else "대출"
+        what = "이자" if re.search(r"이자\s*납입일", text) and "원리금" not in text else "원리금"
+        return ParsedSchedule(issuer=issuer, title=f"{name} {what} 납입", parser="schedule.loan", amount=amount, due_date=due)
 
     if "대출" in text and (m := _LOAN_MONTHLY_RE.search(text)):
         # New loan: the first payment is next month at the earliest, never the day it was taken out.

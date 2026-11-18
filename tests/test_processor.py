@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from decimal import Decimal
 
 import pytest
 
@@ -172,3 +173,18 @@ def test_excluded_account_not_counted(proc: LedgerProcessor) -> None:
     acc = next(a for a in proc.store.list_accounts() if a["label"] == "롯데법인1234")
     proc.store.update_account(acc["id"], include=0, owner_type="business")
     assert proc.store.daily_totals(date(2026, 11, 1), date(2026, 11, 30)) == {}
+
+
+def test_same_bill_with_new_title_is_not_duplicated(proc: LedgerProcessor) -> None:
+    # a row stored by an older version under a generic title, then the same bill reported again
+    proc.store.insert_schedule("카카오뱅크", "대출 원리금 납입", Decimal("1725651"), date(2026, 11, 23), None)
+    proc.process(
+        _raw(
+            "com.kakaobank.channel",
+            "대출 원리금 1,725,651원  납입 예정",
+            "주택담보대출(0000)의 원리금 납입일은 2026.11.23입니다.\n납입예정금액: 1,725,651원",
+            "2026-11-16T11:49:47+09:00",
+        )
+    )
+    rows = proc.store.list_schedules(date(2026, 11, 1), date(2026, 11, 30))
+    assert [(r["title"], r["amount"]) for r in rows] == [("주택담보대출(0000) 원리금 납입", "1725651")]
