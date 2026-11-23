@@ -43,7 +43,8 @@ CARD_ISSUERS: tuple[tuple[str, str], ...] = (
     ("우체국", "우체국카드"),
 )
 
-CURRENCIES = "USD|EUR|JPY|CNY|GBP|HKD|SGD|AUD|CAD|THB|VND|PHP|TWD|CHF|NZD|MYR|IDR"
+# KRW: overseas merchants billed in won ("KRW 14,907 해외승인")
+CURRENCIES = "KRW|USD|EUR|JPY|CNY|GBP|HKD|SGD|AUD|CAD|THB|VND|PHP|TWD|CHF|NZD|MYR|IDR"
 
 _AMOUNT_RE = re.compile(rf"(?:(?P<cur>{CURRENCIES})\s*(?P<famt>\d[\d,]*(?:\.\d+)?))|(?P<amt>\d[\d,]*)\s*원")
 _STATUS_RE = re.compile(r"승인|취소")

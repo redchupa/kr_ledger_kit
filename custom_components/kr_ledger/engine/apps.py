@@ -63,6 +63,8 @@ _TOSS_TITLE_RE = re.compile(r"^(?:[가-힣A-Za-z]+\s+)?([\d,]+)\s*원\s*(입금|
 # title "이자납부완료" / body "마이너스대출의 이자 10,421원을 냈어요."
 _TOSS_INTEREST_RE = re.compile(r"(\S+)의\s*이자\s*([\d,]+)\s*원을?\s*냈어요")
 _TOSS_TITLE2_RE = re.compile(r"^(입금|출금|결제|송금)\s*([\d,]+)\s*원")
+# title "요금납부 출금" / body "내 토스뱅크 통장에서 32,800원이 출금됐어요. 롯데카드자동이체"
+_TOSS_SENTENCE_RE = re.compile(r"^(.+?)(?:에서|으로|로)\s*([\d,]+)\s*원이\s*(출금|입금)됐어요\.?\s*(.*)$")
 
 
 def parse_toss(raw: RawNotification) -> ParsedTransaction | None:
@@ -85,6 +87,22 @@ def parse_toss(raw: RawNotification) -> ParsedTransaction | None:
             issuer=bank,
             merchant=f"{im.group(1)} 이자",
             account_label=f"{bank} {im.group(1)}",
+        )
+    if (sm := _TOSS_SENTENCE_RE.match(body.splitlines()[0] if body else "")) and not _TOSS_TITLE_RE.match(title):
+        out = sm.group(3) == "출금"
+        # the memo can start with the billed phone number ("01012345678SKT"): keep the name only
+        memo = re.sub(r"^\d{6,}", "", sm.group(4)).strip() or None
+        bank = raw.clean_sub_text or ("토스뱅크" if "토스뱅크" in sm.group(1) else "토스")
+        return ParsedTransaction(
+            direction=Direction.OUT if out else Direction.IN,
+            amount=parse_decimal(sm.group(2)),  # type: ignore[arg-type]
+            occurred_at=raw.post_time,
+            method=Method.BANK,
+            source_kind=SourceKind.BANK_APP,
+            parser="app.toss",
+            issuer=bank,
+            merchant=memo,
+            account_label=f"{bank} {sm.group(1).strip()}",
         )
     if m := _TOSS_TITLE_RE.match(title):
         amount, kind = m.group(1), m.group(2)

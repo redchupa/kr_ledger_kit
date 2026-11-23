@@ -955,5 +955,65 @@
       "kind": "expense",
       "category": "대출상환"
     }
+  },
+  {
+    "id": "toss_bill_paid_sentence_phone_memo",
+    "package": "viva.republica.toss",
+    "title": "요금납부 출금",
+    "body": "내 토스뱅크 통장에서 32,800원이 출금됐어요. 01000000000SKT",
+    "post_time": "2026-11-23T19:06:22+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.toss",
+      "direction": "out",
+      "amount": "32800",
+      "merchant": "SKT",
+      "account_label": "토스뱅크 내 토스뱅크 통장",
+      "kind": "expense",
+      "category": "통신"
+    }
+  },
+  {
+    "id": "toss_card_autopay_sentence",
+    "package": "viva.republica.toss",
+    "title": "요금납부 출금",
+    "body": "내 토스뱅크 통장에서 576,130원이 출금됐어요. 롯데카드자동이체",
+    "post_time": "2026-11-23T19:21:49+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.toss",
+      "amount": "576130",
+      "merchant": "롯데카드자동이체",
+      "kind": "transfer",
+      "category": "카드대금"
+    }
+  },
+  {
+    "id": "sms_lotte_overseas_billed_in_krw",
+    "package": "com.samsung.android.messaging",
+    "title": "롯데카드결재내역",
+    "body": "[Web발신]\nWWW.ALIEXP\nKRW 14,907 해외승인\n홍*동 롯데1*2*\n일시불 11/23 13:36\n누적3,409,068원",
+    "post_time": "2026-11-23T13:37:11+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.card",
+      "currency": "KRW",
+      "amount": "14907",
+      "merchant": "WWW.ALIEXP",
+      "category": "쇼핑"
+    }
+  },
+  {
+    "id": "sms_card_insurance_category",
+    "package": "com.samsung.android.messaging",
+    "title": "롯데카드결재내역",
+    "body": "[Web발신]\nDB손해보험\n74,540원 승인\n홍*동 롯데1*2*\n일시불 11/23 12:06\n누적3,393,867원",
+    "post_time": "2026-11-23T12:06:15+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "sms.card",
+      "amount": "74540",
+      "category": "보험"
+    }
   }
 ]
