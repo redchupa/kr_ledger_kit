@@ -204,3 +204,11 @@ def test_card_bill_transfer_does_not_pair_with_income(proc: LedgerProcessor) -> 
     proc.process(_raw("viva.republica.toss", "요금납부 50,000원 출금", "내 토스뱅크 통장 → 현대카드", "2026-11-21T11:01:00+09:00"))
     kinds = sorted(r["kind"] for r in proc.store.list_transactions(date(2026, 11, 21), date(2026, 11, 21)))
     assert kinds == ["income", "transfer"]
+
+
+def test_editing_income_to_transfer_keeps_direction(proc: LedgerProcessor) -> None:
+    out = proc.process(_raw("viva.republica.toss", "30,000원 입금", "김친구 → 내 토스뱅크 통장", "2026-11-21T11:00:00+09:00"))
+    row = proc.edit(out.transaction_id, {"kind": "transfer"})
+    assert row["direction"] == "in"
+    day = proc.store.daily_totals(date(2026, 11, 21), date(2026, 11, 21))["2026-11-21"]
+    assert day["transfer"] == 0  # an incoming leg is not counted as money moved out

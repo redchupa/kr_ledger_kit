@@ -190,7 +190,12 @@ class LedgerProcessor:
             return None
         updates = {k: v for k, v in fields.items() if k in EDITABLE_TX_FIELDS}
         if "kind" in updates:
-            updates["direction"] = "in" if updates["kind"] == Kind.INCOME else "out"
+            if updates["kind"] == Kind.INCOME:
+                updates["direction"] = "in"
+            elif updates["kind"] != Kind.TRANSFER:
+                updates["direction"] = "out"
+            # A transfer keeps its direction: marking an incoming leg as 이체 must not turn it into
+            # money leaving (only outgoing legs count toward the transfer total).
         self.store.update_transaction(tx_id, edited=1, **updates)
         merchant = updates.get("merchant", row.get("merchant"))
         if learn and "category" in updates and merchant and row["kind"] in (Kind.EXPENSE, Kind.REFUND):
