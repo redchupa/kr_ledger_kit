@@ -840,5 +840,106 @@
       "amount": "41100",
       "category": "마트·생활"
     }
+  },
+  {
+    "id": "toss_autopay_to_own_account",
+    "package": "viva.republica.toss",
+    "title": "2,000,000원 자동이체",
+    "body": "내 토스뱅크 통장 → 홍길동 (주택담보대출 개인통장0000)",
+    "post_time": "2026-11-21T09:14:34+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.toss",
+      "direction": "out",
+      "amount": "2000000",
+      "account_label": "토스뱅크 내 토스뱅크 통장",
+      "kind": "transfer"
+    }
+  },
+  {
+    "id": "toss_overdraft_interest",
+    "package": "viva.republica.toss",
+    "title": "이자납부완료",
+    "body": "마이너스대출의 이자 10,421원을 냈어요.",
+    "post_time": "2026-11-23T08:05:08+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.toss",
+      "direction": "out",
+      "amount": "10421",
+      "merchant": "마이너스대출 이자",
+      "account_label": "토스뱅크 마이너스대출",
+      "kind": "expense",
+      "category": "이자"
+    }
+  },
+  {
+    "id": "toss_autopay_reminder",
+    "package": "viva.republica.toss",
+    "title": "2,380,000원 납부 예정",
+    "body": "내일 6건의 토스뱅크 자동이체가 있어요. 계좌에 잔액이 충분한지 확인해보세요.",
+    "post_time": "2026-11-20T17:33:06+09:00",
+    "expect": {
+      "status": "ignored"
+    }
+  },
+  {
+    "id": "hanacard_app_cancel_negative_amount",
+    "package": "com.hanaskcard.paycla",
+    "title": "(결제취소) -160,000원",
+    "body": "할인취소 -10,320원 / 신용(일시불,1*2*) / 11.20 13:38 / 케이에이치에너지(주)직영점",
+    "post_time": "2026-11-20T13:38:39+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.hanacard",
+      "amount": "160000",
+      "is_cancel": true,
+      "merchant": "케이에이치에너지(주)직영점",
+      "account_label": "하나1*2*",
+      "occurred_at": "2026-11-20T13:38",
+      "kind": "refund"
+    }
+  },
+  {
+    "id": "sms_kakaobank_loan_due_tomorrow",
+    "package": "com.samsung.android.messaging",
+    "title": "카카오뱅크문자",
+    "body": "<제목: 이자 납입 안내>\n[Web발신]\n[카카오뱅크]\n홍*동님 내일은 신용대출(0000)의 이자 납입일입니다.\n \n- 납입일 : 2026.11.23\n- 납입예정금액 : 272,110원",
+    "post_time": "2026-11-22T11:14:57+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.loan",
+      "title": "신용대출(0000) 이자 납입",
+      "amount": "272110",
+      "due_date": "2026-11-23"
+    }
+  },
+  {
+    "id": "kakao_alimtalk_kbank_loan_payment",
+    "package": "com.kakao.talk",
+    "title": "케이뱅크",
+    "body": "홍길*님\n대출금7,400,000원\n납입액 52,993원\n11월21일 출금예정\n\n\n동 문자는 고객 안내차 발송되는 문자이며 납부일 이전 원리금, 이자를 납부 하셨더라도 연체로부터 고객님을 보호하기 위해 확인차 일괄 발송 됩니다.",
+    "post_time": "2026-11-19T10:17:21+09:00",
+    "expect": {
+      "status": "schedule",
+      "parser": "schedule.loan",
+      "issuer": "케이뱅크",
+      "amount": "52993",
+      "due_date": "2026-11-21"
+    }
+  },
+  {
+    "id": "kbank_app_loan_interest_category",
+    "package": "com.kbankwith.smartbank",
+    "title": "케이뱅크",
+    "body": "출금 52,993원\n대출이자상환 | 생활통장(0000)\n잔액 56,669원",
+    "post_time": "2026-11-21T07:18:17+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.kbank",
+      "amount": "52993",
+      "kind": "expense",
+      "category": "이자"
+    }
   }
 ]

@@ -26,7 +26,10 @@ _KO_MD_AMOUNT_RE = re.compile(r"(\d{1,2})월\s*(\d{1,2})일\s*(?:결제예정금
 _DAY_DUE_RE = re.compile(r"(?<!\d)(\d{1,2})일은[^\n]*결제일")
 _LABELED_AMOUNT_RE = re.compile(r"(?:결제금액|결제예정금액|청구금액)\s*[:：]\s*([\d,]+)\s*원")
 # 대출: 납입일은 2026.11.23 ... 납입예정금액 : 1,725,651원
-_LOAN_DATE_RE = re.compile(r"납입일[은는]?\s*(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})")
+_LOAN_DATE_RE = re.compile(r"납입일[은는]?\s*[:：]?\s*(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})")
+# 케이뱅크 알림톡: "대출금7,400,000원 / 납입액 52,993원 / 11월21일 출금예정"
+_LOAN_PAYMENT_RE = re.compile(r"납입액\s*[:：]?\s*([\d,]+)\s*원")
+_KO_MD_DUE_RE = re.compile(r"(\d{1,2})월\s*(\d{1,2})일\s*(?:출금|납입)\s*예정")
 # 케이뱅크 대출실행안내: "대출납입기일 : 매월 13일"
 _LOAN_MONTHLY_RE = re.compile(r"납입\s*기일\s*[:：]?\s*매월\s*(\d{1,2})\s*일")
 _LOAN_AMOUNT_RE = re.compile(r"납입예정금액\s*:?\s*([\d,]+)\s*원|원리금\s*([\d,]+)\s*원")
@@ -110,6 +113,15 @@ def parse_schedule(raw: RawNotification, issuer_hint: str) -> ParsedSchedule | N
             name = loan2.group(1) if loan2 else "대출"
         what = "이자" if re.search(r"이자\s*납입일", text) and "원리금" not in text else "원리금"
         return ParsedSchedule(issuer=issuer, title=f"{name} {what} 납입", parser="schedule.loan", amount=amount, due_date=due)
+
+    if "대출" in text and (am := _LOAN_PAYMENT_RE.search(text)) and (dm := _KO_MD_DUE_RE.search(text)):
+        return ParsedSchedule(
+            issuer=issuer,
+            title="대출 원리금 납입",
+            parser="schedule.loan",
+            amount=parse_decimal(am.group(1)),
+            due_date=infer_future_date(int(dm.group(1)), int(dm.group(2)), raw.post_time),
+        )
 
     if "대출" in text and (m := _LOAN_MONTHLY_RE.search(text)):
         # New loan: the first payment is next month at the earliest, never the day it was taken out.

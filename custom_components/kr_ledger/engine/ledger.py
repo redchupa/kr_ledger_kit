@@ -52,6 +52,7 @@ def is_owner(name: str | None, owners: Sequence[str]) -> bool:
 
 DEFAULT_CATEGORIES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("세금", ("관세", "국세", "지방세", "세금", "과태료")),
+    ("이자", ("대출이자", "대출 이자", "이자상환", "이자납부")),
     (
         "구독",
         (

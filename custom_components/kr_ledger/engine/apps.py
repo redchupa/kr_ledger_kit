@@ -59,7 +59,9 @@ def parse_kakaobank(raw: RawNotification) -> ParsedTransaction | None:
 
 # ---------------------------------------------------------------- 토스 / 토스뱅크
 # "6,585원 입금" / "요금납부 19,100원 출금" (card bill paid from 토스뱅크)
-_TOSS_TITLE_RE = re.compile(r"^(?:[가-힣A-Za-z]+\s+)?([\d,]+)\s*원\s*(입금|출금|결제|송금|환불|결제 취소|결제취소)")
+_TOSS_TITLE_RE = re.compile(r"^(?:[가-힣A-Za-z]+\s+)?([\d,]+)\s*원\s*(입금|출금|자동이체|결제|송금|환불|결제 취소|결제취소)")
+# title "이자납부완료" / body "마이너스대출의 이자 10,421원을 냈어요."
+_TOSS_INTEREST_RE = re.compile(r"(\S+)의\s*이자\s*([\d,]+)\s*원을?\s*냈어요")
 _TOSS_TITLE2_RE = re.compile(r"^(입금|출금|결제|송금)\s*([\d,]+)\s*원")
 
 
@@ -67,6 +69,23 @@ def parse_toss(raw: RawNotification) -> ParsedTransaction | None:
     title = clean(raw.clean_title)
     if "실패" in title:
         return None  # "요금납부 132,810원 출금 실패": nothing moved
+    body = clean(raw.body)
+    # Newer Toss notifications carry no sub text; the account line still names the bank.
+    sub = raw.clean_sub_text or ("토스뱅크" if "토스뱅크" in body else "토스")
+    if im := _TOSS_INTEREST_RE.search(body):
+        # loans live in 토스뱅크 even when the notification doesn't say so
+        bank = raw.clean_sub_text or "토스뱅크"
+        return ParsedTransaction(
+            direction=Direction.OUT,
+            amount=parse_decimal(im.group(2)),  # type: ignore[arg-type]
+            occurred_at=raw.post_time,
+            method=Method.BANK,
+            source_kind=SourceKind.BANK_APP,
+            parser="app.toss",
+            issuer=bank,
+            merchant=f"{im.group(1)} 이자",
+            account_label=f"{bank} {im.group(1)}",
+        )
     if m := _TOSS_TITLE_RE.match(title):
         amount, kind = m.group(1), m.group(2)
     elif m := _TOSS_TITLE2_RE.match(title):
@@ -82,8 +101,7 @@ def parse_toss(raw: RawNotification) -> ParsedTransaction | None:
         src, dst = arrow
         account, counterparty = (dst, src) if direction is Direction.IN else (src, dst)
     elif kind.startswith("결제"):
-        counterparty = clean(raw.body).split("\n")[0] or None
-    sub = raw.clean_sub_text or "토스"
+        counterparty = body.split("\n")[0] or None
     method = Method.PAY if kind.startswith("결제") else Method.BANK
     return ParsedTransaction(
         direction=direction,
@@ -162,8 +180,11 @@ def parse_kbank(raw: RawNotification) -> ParsedTransaction | None:
 
 
 # ---------------------------------------------------------------- 하나카드 앱
-_HANA_TITLE_RE = re.compile(r"^\((결제|승인|취소|승인취소|결제취소)\)\s*(?:(USD|EUR|JPY|CNY)\s*)?([\d,]+(?:\.\d+)?)\s*원?$")
-_HANA_CARD_RE = re.compile(r"\(([^,)]+),?([\d*]+)?\)")
+# "(결제) 4,500원" / "(결제취소) -160,000원"
+_HANA_TITLE_RE = re.compile(r"^\((결제|승인|취소|승인취소|결제취소)\)\s*(?:(USD|EUR|JPY|CNY)\s*)?-?\s*([\d,]+(?:\.\d+)?)\s*원?$")
+_HANA_WHEN_RE = re.compile(r"\d{1,2}\.\d{1,2}\s+\d{1,2}:\d{2}")
+# the card field: "신용(일시불,0*0*)" / "체크(0*0*)" — not a merchant's "(주)"
+_HANA_CARD_RE = re.compile(r"^[가-힣]{0,4}\(([^,)]+),?([\d*]+)?\)$")
 
 
 def parse_hanacard_app(raw: RawNotification) -> ParsedTransaction | None:
@@ -172,11 +193,14 @@ def parse_hanacard_app(raw: RawNotification) -> ParsedTransaction | None:
     if not m:
         return None
     parts = [p.strip() for p in re.split(r"\s*/\s*|\n", clean(raw.body)) if p.strip()]
-    merchant = parts[0] if parts else None
+    # A cancellation lists the cancelled discount first and the merchant last:
+    # "할인취소 -10,320원 / 신용(일시불,0*0*) / 11.20 13:38 / 가맹점"
+    parts = [p for p in parts if not p.startswith(("할인취소", "할인 취소"))]
+    merchant = next((p for p in parts if not _HANA_CARD_RE.match(p) and not _HANA_WHEN_RE.search(p) and "누적" not in p), None)
     installment = None
     label = "하나카드"
-    for p in parts[1:]:
-        if cm := _HANA_CARD_RE.search(p):
+    for p in parts:
+        if cm := _HANA_CARD_RE.match(p):
             installment = cm.group(1)
             if cm.group(2):
                 label = f"하나{cm.group(2)}"

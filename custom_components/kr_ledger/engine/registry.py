@@ -24,7 +24,9 @@ from .sms_card import parse_card_sms
 _NOISE_MARKERS = ("(광고)", "알림 끄기는", "쿠폰", "이벤트", "혜택")
 # Notices about money that has not moved (or moved in another notification):
 # "오늘 하나카드에서 319,938원 출금할 예정이에요", "요금납부 132,810원 출금 실패"
-_NO_MOVEMENT_RE = re.compile(r"출금\s*실패|이체\s*실패|할\s*예정이에요|될\s*예정이에요|예정입니다")
+_NO_MOVEMENT_RE = re.compile(
+    r"출금\s*실패|이체\s*실패|할\s*예정이에요|될\s*예정이에요|예정입니다|납부\s*예정|\d+\s*건의\s*\S*\s*자동이체가\s*있어요"
+)
 # Card companies confirming a bill payment or returning an overpayment. The money itself is
 # recorded from the bank side ("내 통장 → 현대카드"), so these would only count it twice:
 #   [현대카드] 홍*동님 11/13 1,629,213원이 입금되었습니다
