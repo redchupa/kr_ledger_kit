@@ -141,7 +141,10 @@ class LedgerProcessor:
 
         changed = [tx_id]
         row = store.get_transaction(tx_id)
-        if row and row["method"] == "bank" and row["kind"] in (Kind.EXPENSE, Kind.INCOME):
+        # An own-account transfer ("→ 홍길동") can arrive after its other leg was stored as income
+        # or expense (e.g. the receiving account shows a memo instead of the name), so it pairs too.
+        own_transfer = row is not None and row["kind"] == Kind.TRANSFER and row["category"] == "이체"
+        if row and row["method"] == "bank" and (row["kind"] in (Kind.EXPENSE, Kind.INCOME) or own_transfer):
             partner = store.bank_transfer_partner(row, TRANSFER_PAIR_MINUTES)
             if partner and not partner.get("edited"):
                 # Money left one of the user's accounts and arrived in another.

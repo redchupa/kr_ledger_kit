@@ -941,5 +941,19 @@
       "kind": "expense",
       "category": "이자"
     }
+  },
+  {
+    "id": "kakaobank_app_loan_repayment_category",
+    "package": "com.kakaobank.channel",
+    "title": "출금 1,725,651원",
+    "body": "입출금통장(0000) → 대출상환(0000)\n잔액 2,239원",
+    "post_time": "2026-11-23T08:40:25+09:00",
+    "expect": {
+      "status": "transaction",
+      "parser": "app.kakaobank",
+      "amount": "1725651",
+      "kind": "expense",
+      "category": "대출상환"
+    }
   }
 ]

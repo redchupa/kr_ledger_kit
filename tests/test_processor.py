@@ -188,3 +188,19 @@ def test_same_bill_with_new_title_is_not_duplicated(proc: LedgerProcessor) -> No
     )
     rows = proc.store.list_schedules(date(2026, 11, 1), date(2026, 11, 30))
     assert [(r["title"], r["amount"]) for r in rows] == [("주택담보대출(0000) 원리금 납입", "1725651")]
+
+
+def test_own_transfer_arriving_late_pairs_with_income(proc: LedgerProcessor) -> None:
+    # the receiving sub account shows only a memo, so it was stored as income first
+    inn = proc.process(_raw("viva.republica.toss", "10,000원 입금", "할머니용돈 → 내 토스뱅크 서브 통장", "2026-11-21T11:01:54+09:00"))
+    assert inn.transaction["kind"] == "income"
+    proc.process(_raw("viva.republica.toss", "10,000원 자동이체", "내 토스뱅크 통장 → 홍길동 (할머니용돈)", "2026-11-21T11:01:54+09:00"))
+    rows = proc.store.list_transactions(date(2026, 11, 21), date(2026, 11, 21))
+    assert {r["kind"] for r in rows} == {"transfer"}
+
+
+def test_card_bill_transfer_does_not_pair_with_income(proc: LedgerProcessor) -> None:
+    proc.process(_raw("viva.republica.toss", "50,000원 입금", "김친구 → 내 토스뱅크 통장", "2026-11-21T11:00:00+09:00"))
+    proc.process(_raw("viva.republica.toss", "요금납부 50,000원 출금", "내 토스뱅크 통장 → 현대카드", "2026-11-21T11:01:00+09:00"))
+    kinds = sorted(r["kind"] for r in proc.store.list_transactions(date(2026, 11, 21), date(2026, 11, 21)))
+    assert kinds == ["income", "transfer"]
