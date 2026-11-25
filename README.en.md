@@ -83,6 +83,12 @@ Check in **Developer tools → States** that both `sensor.<phone>_last_notificat
 
 ## Step 2 — install with HACS
 
+Click the button to open this repository in HACS on your own Home Assistant — no URL copy-paste needed.
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=redchupa&repository=kr_ledger_kit&category=integration)
+
+Or add it manually:
+
 HACS → ⋮ → **Custom repositories** → `https://github.com/redchupa/kr_ledger_kit`, type **Integration**
 → download **KR Ledger** → restart Home Assistant.
 
