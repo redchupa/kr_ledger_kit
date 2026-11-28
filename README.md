@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/redchupa/kr_ledger_kit/releases/latest"><img src="https://img.shields.io/github/v/release/redchupa/kr_ledger_kit?label=release&color=brightgreen" alt="Release"></a>
-  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg" alt="HACS"></a>
+  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS Default"></a>
   <img src="https://img.shields.io/badge/Home%20Assistant-2025.8%2B-blue?logo=home-assistant&logoColor=white" alt="HA Version">
   <img src="https://img.shields.io/badge/Android-전용-3DDC84?logo=android&logoColor=white" alt="Android only">
   <a href="https://github.com/redchupa/kr_ledger_kit/actions/workflows/ci.yml"><img src="https://github.com/redchupa/kr_ledger_kit/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
@@ -226,27 +226,18 @@ KR Ledger는 HA 컴패니언 앱이 보내 주는 **알림 센서 2개**를 읽�
 HA 좌측 사이드바에 **HACS** 또는 **Marketplace** 메뉴가 있으면 OK.
 없으면 [HACS 설치 가이드](https://www.hacs.xyz/docs/use/download/download/)를 먼저 따라 해 주세요.
 
-## 2-2. KR Ledger 저장소 등록
+## 2-2. KR Ledger 찾아서 다운로드
 
-아래 버튼을 누르면 내 Home Assistant의 HACS에서 이 저장소가 바로 열립니다. URL을 복사해 붙여넣을 필요가 없어요.
+KR Ledger는 HACS 기본 목록에 등록되어 있어 저장소를 따로 추가하지 않아도 됩니다. 아래 버튼을 누르면 내 Home Assistant의 HACS에서 KR Ledger 화면이 바로 열립니다.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=redchupa&repository=kr_ledger_kit&category=integration)
 
-버튼이 동작하지 않으면 아래 방법으로 직접 등록하세요.
+버튼이 동작하지 않으면 직접 검색하세요.
 
-1. **HACS** (또는 Marketplace) 열기
-2. 우측 상단 **⋮** → **사용자 지정 저장소** (Custom repositories)
-3. 입력:
-   - 저장소: `https://github.com/redchupa/kr_ledger_kit`
-   - 유형(Type): **Integration**
-4. **추가** 누르기
-
-## 2-3. 다운로드
-
-1. HACS 검색창에 `KR Ledger` 입력
+1. **HACS** (또는 Marketplace) 검색창에 `KR Ledger` 입력
 2. **KR Ledger (가계부)** 선택 → 우측 하단 **다운로드** → 최신 버전으로 **다운로드**
 
-## 2-4. HA 재시작
+## 2-3. HA 재시작
 
 **설정** → 우측 상단 **⋮** → **Home Assistant 다시 시작** → **다시 시작**
 

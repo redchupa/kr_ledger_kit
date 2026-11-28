@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/redchupa/kr_ledger_kit/releases/latest"><img src="https://img.shields.io/github/v/release/redchupa/kr_ledger_kit?label=release&color=brightgreen" alt="Release"></a>
-  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg" alt="HACS"></a>
+  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS Default"></a>
   <img src="https://img.shields.io/badge/Home%20Assistant-2025.8%2B-blue?logo=home-assistant&logoColor=white" alt="HA Version">
   <img src="https://img.shields.io/badge/Android-only-3DDC84?logo=android&logoColor=white" alt="Android only">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/redchupa/kr_ledger_kit?color=lightgrey" alt="License"></a>
@@ -83,14 +83,11 @@ Check in **Developer tools → States** that both `sensor.<phone>_last_notificat
 
 ## Step 2 — install with HACS
 
-Click the button to open this repository in HACS on your own Home Assistant — no URL copy-paste needed.
+KR Ledger is in the default HACS list, so there is no need to add a custom repository. Click the button to open KR Ledger in HACS on your own Home Assistant.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=redchupa&repository=kr_ledger_kit&category=integration)
 
-Or add it manually:
-
-HACS → ⋮ → **Custom repositories** → `https://github.com/redchupa/kr_ledger_kit`, type **Integration**
-→ download **KR Ledger** → restart Home Assistant.
+Or search for **KR Ledger** in HACS → download it → restart Home Assistant.
 
 ## Step 3 — add the integration
 
